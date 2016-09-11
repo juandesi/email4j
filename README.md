@@ -36,8 +36,10 @@ share the retrieve operation (with differences but they both retrieve emails).
 
 This client is mainly used to send emails, it's composed by only one operation `send` that receives an email and sends it to the specified recipients.
 
-    SmtpClient client = new SmtpClient("juan", "desimoni", "juan.smtp.host", 123, emptyMap(), NullTlsConfiguration.getInstance());
-    client.send(email) // pre-built outgoing email.
+```java
+SmtpClient client = new SmtpClient("juan", "desimoni", "juan.smtp.host", 123, emptyMap(), NullTlsConfiguration.getInstance());
+client.send(email) // pre-built outgoing email.
+```
 
 To build outgoing emails Email4J provides a simple builder, the EmailBuilder.
 
