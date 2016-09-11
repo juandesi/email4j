@@ -9,9 +9,11 @@ There are several entities that wrap the low level objects that the transport ha
 
 You can include this library in your project using maven by adding the artifact.
 
-    <groupId>desi.juan</groupId>
-    <artifactId>email4j</artifactId>
-    <version>1.0-SNAPSHOT</version>
+```xml
+<groupId>desi.juan</groupId>
+<artifactId>email4j</artifactId>
+<version>1.0-SNAPSHOT</version>
+```
     
 or you can simply built it locally to get the .jar file
     
@@ -23,9 +25,9 @@ or you can simply built it locally to get the .jar file
 
 Basically you have 3 different clients for connecting with mailboxes.
 
-* a SmtpClient
-* a Pop3Client
-* an ImapClient
+* **a SmtpClient**
+* **a Pop3Client**
+* **an ImapClient**
 
 Each client has a specific set of operations that work for the underlying used protocol, some clients may share operations. i.e: the Pop3Client and the ImapClient
 share the retrieve operation (with differences but they both retrieve emails).
@@ -39,39 +41,49 @@ This client is mainly used to send emails, it's composed by only one operation `
 
 To build outgoing emails Email4J provides a simple builder, the EmailBuilder.
 
-    EmailBuilder.newEmail()
-                .withSubject("This is an email subject")
-                .to(singletonList("juandesimoni@gmail.com"))
-                .withBody("Body of the message")
-                .addAttachment(new EmailAttachment("id", "AttachmentContent", "text/plain; charset=UTF-8"))
-                .build();
+```java
+EmailBuilder.newEmail()
+        .withSubject("This is an email subject")
+        .to(singletonList("juandesimoni@gmail.com"))
+        .withBody("Body of the message")
+        .addAttachment(new EmailAttachment("id", "AttachmentContent", "text/plain; charset=UTF-8"))
+        .build();
+```
 
 Of course there are other options for more complex body objects and attachments.
 
 ### The ImapClient
 The ImapClient talks directly to a mailbox where you can retrieve, move, mark or delete emails.
 
-    ImapClient client = new ImapClient("juan", "desimoni", "juan.imap.host", 995, emptyMap(), NullTlsConfiguration.getInstance());
+```java
+ImapClient client = new ImapClient("juan", "desimoni", "juan.imap.host", 995, emptyMap(), NullTlsConfiguration.getInstance());
+```
 
 The main ImapClient operation is the retrieve operation, you only need to specify a folder and the client will retrieve all the emails 
 contained in it. Also a boolean value is required for this operation since the IMAP protocol provides the capability to fetch emails 
 without opening their content, this means not marking the email as SEEN email, but no body and attachments will be available in the resultant
 emails.
 
-    imapClient.retrieve("INBOX", true);
+```java
+imapClient.retrieve("INBOX", true);
+```
 
 ### The Pop3Client 
 The Pop3Client talks directly to a mailbox where you can retrieve, move, delete emails. There a lot of similarities between 
 the ImapClient and this one, but the POP3 protocol have some restrictions or limitacions since is an older protocol and it's oriented
 for local working.
 
-    Pop3Client client = new Pop3Client("juan", "desimoni", "juan.pop3.host", 995, emptyMap(), NullTlsConfiguration.getInstance());
+```java
+Pop3Client client = new Pop3Client("juan", "desimoni", "juan.pop3.host", 995, emptyMap(), NullTlsConfiguration.getInstance());
+```
 
 Of course we also have a retrieve operation like the ImapClient, the difference between the Imap operation and this one, is that the 
 POP3 transport does not provide the capability to NOT open the fetched emails, so all the emails are READ and opened always. (emails are not
 really read in POP3 since the concept does not exist.)
 
-    pop3Client.retrieve("INBOX");
+```java
+pop3Client.retrieve("INBOX");
+```
 
 ## Contributing
 Feel free to send a pull request if you know that you can improve this lib.
