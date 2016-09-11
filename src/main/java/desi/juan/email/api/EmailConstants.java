@@ -11,6 +11,8 @@ package desi.juan.email.api;
  */
 public final class EmailConstants {
 
+  public static final long DEFAULT_TIMEOUT = 5000;
+
   /**
    * Default folder name for all the mailboxes.
    */
@@ -51,25 +53,6 @@ public final class EmailConstants {
    */
   public static final String SMTPS_PORT = "465";
 
-  /**
-   * Default port value for POP3 servers.
-   */
-  public static final String POP3_PORT = "110";
-
-  /**
-   * Default port value for POP3S servers.
-   */
-  public static final String POP3S_PORT = "995";
-
-  /**
-   * Default port value for IMAP servers.
-   */
-  public static final String IMAP_PORT = "143";
-
-  /**
-   * Default port value for IMAPS servers.
-   */
-  public static final String IMAPS_PORT = "993";
 
   /**
    * Hide constructor
