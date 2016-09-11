@@ -43,8 +43,8 @@ import desi.juan.email.internal.exception.SendEmailException;
 public final class SendCommand {
 
   /**
-   * Sends an email message. The message will be sent to all recipient {@code toAddresses}, {@code ccAddresses},
-   * {@code bccAddresses} specified in the message.
+   * Sends an email message. The message will be sent to all recipient {@code to}, {@code cc},
+   * {@code bcc} specified in the message.
    */
   public void send(SenderConnection connection, Email email) {
     try {

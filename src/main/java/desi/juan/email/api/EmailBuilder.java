@@ -61,7 +61,7 @@ public final class EmailBuilder {
    * @param fromAddresses the addresses to be set in the attributes.
    * @return this {@link EmailBuilder}
    */
-  public EmailBuilder fromAddresses(List<String> fromAddresses) {
+  public EmailBuilder from(List<String> fromAddresses) {
     this.from = fromAddresses;
     return this;
   }
@@ -72,7 +72,7 @@ public final class EmailBuilder {
    * @param toAddresses the "to" addresses to be set.
    * @return this {@link EmailBuilder}
    */
-  public EmailBuilder toAddresses(List<String> toAddresses) {
+  public EmailBuilder to(List<String> toAddresses) {
     this.to = toAddresses;
     return this;
   }
@@ -83,7 +83,7 @@ public final class EmailBuilder {
    * @param bccAddresses the "bcc" addresses to be set.
    * @return this {@link EmailBuilder}
    */
-  public EmailBuilder bccAddresses(List<String> bccAddresses) {
+  public EmailBuilder bcc(List<String> bccAddresses) {
     this.bcc = bccAddresses;
     return this;
   }
@@ -94,7 +94,7 @@ public final class EmailBuilder {
    * @param ccAddresses the "cc" addresses to be set.
    * @return this {@link EmailBuilder}
    */
-  public EmailBuilder ccAddresses(List<String> ccAddresses) {
+  public EmailBuilder cc(List<String> ccAddresses) {
     this.cc = ccAddresses;
     return this;
   }
@@ -116,7 +116,7 @@ public final class EmailBuilder {
    * @param replyToAddresses the "replyTo" addresses to be set.
    * @return this {@link EmailBuilder}
    */
-  public EmailBuilder replyToAddresses(List<String> replyToAddresses) {
+  public EmailBuilder replyTo(List<String> replyToAddresses) {
     this.replyTo = replyToAddresses;
     return this;
   }
