@@ -249,7 +249,7 @@ public class StoredEmail implements Email {
    */
   @Override
   public Optional<LocalDateTime> getReceivedDate() {
-    return Optional.of(receivedDate);
+    return Optional.ofNullable(receivedDate);
   }
 
   /**
@@ -257,7 +257,7 @@ public class StoredEmail implements Email {
    */
   @Override
   public Optional<LocalDateTime> getSentDate() {
-    return Optional.of(sentDate);
+    return Optional.ofNullable(sentDate);
   }
 
   /**

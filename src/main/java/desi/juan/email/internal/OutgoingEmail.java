@@ -190,7 +190,7 @@ public class OutgoingEmail implements Email {
    */
   @Override
   public Optional<LocalDateTime> getSentDate() {
-    return Optional.of(sentDate);
+    return Optional.ofNullable(sentDate);
   }
 
   /**
