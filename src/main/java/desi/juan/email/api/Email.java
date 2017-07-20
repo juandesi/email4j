@@ -23,6 +23,9 @@
  */
 package desi.juan.email.api;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +103,7 @@ public interface Email {
   /**
    * @return all the headers of this email message.
    */
-  Map<String, String> getHeaders();
+  Multimap<String, String> getHeaders();
 
   /**
    * @return an {@link EmailFlags} object containing the flags setted in the email.

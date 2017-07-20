@@ -35,6 +35,8 @@ import java.util.Optional;
 
 import javax.mail.Folder;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import desi.juan.email.api.Email;
 import desi.juan.email.api.EmailAttachment;
 import desi.juan.email.api.EmailBody;
@@ -76,7 +78,7 @@ public class OutgoingEmail implements Email {
   /**
    * The headers that this email carry.
    */
-  private final Map<String, String> headers;
+  private final Multimap<String, String> headers;
 
   /**
    * The subject of the email.
@@ -111,7 +113,7 @@ public class OutgoingEmail implements Email {
                        List<String> replyToAddresses,
                        EmailBody body,
                        List<EmailAttachment> attachments,
-                       Map<String, String> headers) {
+                       Multimap<String, String> headers) {
     this.subject = subject;
     this.sentDate = now();
     this.toAddresses = copyOf(toAddresses);
@@ -121,7 +123,7 @@ public class OutgoingEmail implements Email {
     this.replyToAddresses = copyOf(replyToAddresses);
     this.body = body;
     this.attachments = copyOf(attachments);
-    this.headers = ImmutableMap.copyOf(headers);
+    this.headers = ImmutableMultimap.copyOf(headers);
   }
 
   @Override
@@ -197,8 +199,8 @@ public class OutgoingEmail implements Email {
    * {@inheritDoc}
    */
   @Override
-  public Map<String, String> getHeaders() {
-    return headers != null ? ImmutableMap.copyOf(headers) : ImmutableMap.of();
+  public Multimap<String, String> getHeaders() {
+    return headers != null ? ImmutableMultimap.copyOf(headers) : ImmutableMultimap.of();
   }
 
   /**

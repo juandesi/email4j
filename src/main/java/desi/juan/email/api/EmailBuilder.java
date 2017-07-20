@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import desi.juan.email.internal.DefaultEmailBody;
 import desi.juan.email.internal.OutgoingEmail;
 
@@ -44,7 +46,7 @@ public final class EmailBuilder {
   private List<String> to = new ArrayList<>();
   private List<String> bcc = new ArrayList<>();
   private List<String> cc = new ArrayList<>();
-  private Map<String, String> headers = new HashMap<>();
+  private Multimap<String, String> headers = ImmutableMultimap.of();
   private List<String> replyTo = new ArrayList<>();
   private List<EmailAttachment> attachments = new ArrayList<>();
   private EmailBody body;
@@ -155,7 +157,7 @@ public final class EmailBuilder {
    * @param headers the headers to be set.
    * @return this {@link EmailBuilder}
    */
-  public EmailBuilder withHeaders(Map<String, String> headers) {
+  public EmailBuilder withHeaders(Multimap<String, String> headers) {
     this.headers.putAll(headers);
     return this;
   }  

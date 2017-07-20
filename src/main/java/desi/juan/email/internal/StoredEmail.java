@@ -49,6 +49,9 @@ import javax.mail.Header;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
 import desi.juan.email.api.Email;
 import desi.juan.email.api.EmailAttachment;
 import desi.juan.email.api.EmailBody;
@@ -106,7 +109,7 @@ public class StoredEmail implements Email {
   /**
    * The headers that this email carry.
    */
-  private final Map<String, String> headers;
+  private final Multimap<String, String> headers;
 
   /**
    * The subject of the email.
@@ -264,8 +267,8 @@ public class StoredEmail implements Email {
    * {@inheritDoc}
    */
   @Override
-  public Map<String, String> getHeaders() {
-    return headers != null ? ImmutableMap.copyOf(headers) : ImmutableMap.of();
+  public Multimap<String, String> getHeaders() {
+    return headers != null ? ImmutableMultimap.copyOf(headers) : ImmutableMultimap.of();
   }
 
   /**
@@ -305,8 +308,8 @@ public class StoredEmail implements Email {
   /**
    * Parses all the {@link Message} headers to a {@link Map}
    */
-  private Map<String, String> parseHeaders(Enumeration headers) {
-    ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+  private Multimap<String, String> parseHeaders(Enumeration headers) {
+    ImmutableMultimap.Builder<String, String> builder = ImmutableMultimap.builder();
     while (headers.hasMoreElements()) {
       Header header = (Header) headers.nextElement();
       builder.put(header.getName(), header.getValue());
