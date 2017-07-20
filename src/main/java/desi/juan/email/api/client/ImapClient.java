@@ -39,6 +39,7 @@ import desi.juan.email.api.Email;
 import desi.juan.email.api.EmailFlags.EmailFlag;
 import desi.juan.email.api.client.configuration.ClientConfiguration;
 import desi.juan.email.internal.commands.MarkEmailCommand;
+import desi.juan.email.internal.commands.RetrieveOperations;
 import desi.juan.email.internal.exception.EmailException;
 
 /**
@@ -69,7 +70,11 @@ public class ImapClient extends AbstractMailboxManagerClient {
   }
 
   public List<Email> retrieve(String folder, boolean readContent) {
-    return retriever.retrieve(connection.getFolder(folder, READ_ONLY), readContent);
+    return retrieve(folder, readContent, RetrieveOperations.ALL_MESSAGES);
+  }
+
+  public List<Email> retrieve(String folder, boolean readContent, int numToRetrieve) {
+    return retriever.retrieve(connection.getFolder(folder, READ_ONLY), readContent, numToRetrieve);
   }
 
   public Email retrieveById(String folder, long id) {
