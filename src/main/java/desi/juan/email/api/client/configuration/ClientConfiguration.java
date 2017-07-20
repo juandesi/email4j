@@ -23,28 +23,63 @@
  */
 package desi.juan.email.api.client.configuration;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
+import com.google.common.collect.ImmutableMap;
 import desi.juan.email.api.security.TlsConfiguration;
 
 /**
- * This interface represents a configuration with advanced attributes for a client, you can always go
- * to the {@link BasicConfiguration} for basic cases, but this enables the use of TLS for encrypted
+ * This class represents a configuration with advanced which enables the use of TLS for encrypted
  * transactions and more advanced configurations for the underlying procotol by injecting specific
  * properties.
  */
-public interface ClientConfiguration {
+public class ClientConfiguration {
 
-  long DEFAULT_TIMEOUT = 5000;
+  private long connectionTimeout;
+  private Map<String, String> properties;
+  private long readTimeout;
+  private TlsConfiguration tlsConfig;
+  private long writeTimeout;
 
-  Optional<TlsConfiguration> getTlsConfig();
+  public ClientConfiguration(long connectionTimeout,
+                      Map<String, String> properties,
+                      long readTimeout,
+                      TlsConfiguration tlsConfig,
+                      long writeTimeout) {
+    this.connectionTimeout = connectionTimeout;
+    this.properties = ImmutableMap.copyOf(properties);
+    this.readTimeout = readTimeout;
+    this.tlsConfig = tlsConfig;
+    this.writeTimeout = writeTimeout;
+  }
 
-  long getConnectionTimeout();
+  /**
+   * Default timeouts are 10 seconds
+   * @return
+   */
+  public static ClientConfiguration getDefaultConfiguration() {
+    return new ClientConfiguration(10000, Collections.emptyMap(),10000, null,10000);
+  }
 
-  long getWriteTimeout();
+  public long getConnectionTimeout() {
+    return connectionTimeout;
+  }
 
-  long getReadTimeout();
+  public Map<String, String> getProperties() {
+    return properties;
+  }
 
-  Map<String, String> getProperties();
+  public long getReadTimeout() {
+    return readTimeout;
+  }
+
+  public Optional<TlsConfiguration> getTlsConfig() {
+    return Optional.ofNullable(tlsConfig);
+  }
+
+  public long getWriteTimeout() {
+    return writeTimeout;
+  }
 }

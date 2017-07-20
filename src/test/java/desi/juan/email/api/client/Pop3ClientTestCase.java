@@ -37,7 +37,7 @@ import javax.mail.internet.MimeMessage;
 
 import desi.juan.email.Email4JTestCase;
 import desi.juan.email.api.Email;
-import desi.juan.email.api.client.configuration.ClientConfigurationBuilder;
+import desi.juan.email.api.client.configuration.ClientConfiguration;
 import desi.juan.email.internal.StoredEmail;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +56,7 @@ public class Pop3ClientTestCase extends Email4JTestCase {
   @Before
   public void createClient()
   {
-    client = new Pop3Client(GOKU_EMAIL, PASSWORD, HOST, PORT, ClientConfigurationBuilder.getDefaultConfiguration());
+    client = new Pop3Client(GOKU_EMAIL, PASSWORD, HOST, PORT, ClientConfiguration.getDefaultConfiguration());
   }
 
   @Test

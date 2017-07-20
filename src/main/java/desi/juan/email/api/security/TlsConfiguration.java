@@ -36,32 +36,44 @@ public interface TlsConfiguration {
    *
    * @return ths list of enabled cipher suites
    */
-  String[] getEnabledCipherSuites();
+  default String[] getEnabledCipherSuites() {
+    return new String[0];
+  }
 
   /**
    * The list of enabled protocols that must be used to restrict the creation of the SSL Sockets
    *
    * @return the list of enabled protocols
    */
-  String[] getEnabledProtocols();
+  default String[] getEnabledProtocols() {
+    return new String[0];
+  }
 
   /**
    * @return true if the keystore was configured, false otherwise
    */
-  boolean isKeyStoreConfigured();
+  default boolean isKeyStoreConfigured() {
+    return false;
+  }
 
   /**
    * @return true if the trust store was configured, false otherwise
    */
-  boolean isTrustStoreConfigured();
+  default boolean isTrustStoreConfigured() {
+    return false;
+  }
 
   /**
    * @return An object with the configuration of the key store.
    */
-  TlsContextKeyStoreConfiguration getKeyStoreConfiguration();
+  default TlsContextKeyStoreConfiguration getKeyStoreConfiguration() {
+    return null;
+  }
 
   /**
    * @return An object with the configuration of the trust store.
    */
-  TlsContextTrustStoreConfiguration getTrustStoreConfiguration();
+  default TlsContextTrustStoreConfiguration getTrustStoreConfiguration() {
+    return null;
+  }
 }
