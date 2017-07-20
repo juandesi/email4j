@@ -41,14 +41,14 @@ import desi.juan.email.api.client.configuration.ClientConfiguration;
 public class Pop3Client extends AbstractMailboxManagerClient {
 
   /**
-   * Default port value for IMAP servers.
+   * Default port value for POP3 servers.
    */
-  public static final String DEFAULT_IMAP_PORT = "143";
+  public static final String DEFAULT_POP3_PORT = "110";
 
   /**
-   * Default port value for IMAPS servers.
+   * Default port value for POP3S servers.
    */
-  public static final String DEFAULT_IMAPS_PORT = "993";
+  public static final String DEFAULT_POP3S_PORT = "995";
 
 
   public Pop3Client(String username,
