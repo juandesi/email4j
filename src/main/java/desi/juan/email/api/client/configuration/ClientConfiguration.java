@@ -37,11 +37,19 @@ import desi.juan.email.api.security.TlsConfiguration;
  */
 public class ClientConfiguration {
 
-  private long connectionTimeout;
-  private Map<String, String> properties;
-  private long readTimeout;
-  private TlsConfiguration tlsConfig;
-  private long writeTimeout;
+  private final long connectionTimeout;
+  private final Map<String, String> properties;
+  private final long readTimeout;
+  private final TlsConfiguration tlsConfig;
+  private final long writeTimeout;
+
+  /**
+   * Default timeouts are 10 seconds
+   * @return
+   */
+  public ClientConfiguration() {
+    this(10000, Collections.emptyMap(), 10000, null, 10000);
+  }
 
   public ClientConfiguration(long connectionTimeout,
                       Map<String, String> properties,
@@ -53,14 +61,6 @@ public class ClientConfiguration {
     this.readTimeout = readTimeout;
     this.tlsConfig = tlsConfig;
     this.writeTimeout = writeTimeout;
-  }
-
-  /**
-   * Default timeouts are 10 seconds
-   * @return
-   */
-  public static ClientConfiguration getDefaultConfiguration() {
-    return new ClientConfiguration(10000, Collections.emptyMap(),10000, null,10000);
   }
 
   public long getConnectionTimeout() {

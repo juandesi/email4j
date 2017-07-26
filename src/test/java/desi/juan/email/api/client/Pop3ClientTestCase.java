@@ -37,7 +37,9 @@ import javax.mail.internet.MimeMessage;
 
 import desi.juan.email.Email4JTestCase;
 import desi.juan.email.api.Email;
+import static desi.juan.email.api.EmailConstants.INBOX_FOLDER;
 import desi.juan.email.api.client.configuration.ClientConfiguration;
+import desi.juan.email.internal.EmailProtocol;
 import desi.juan.email.internal.StoredEmail;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,12 +58,12 @@ public class Pop3ClientTestCase extends Email4JTestCase {
   @Before
   public void createClient()
   {
-    client = new Pop3Client(GOKU_EMAIL, PASSWORD, HOST, PORT, ClientConfiguration.getDefaultConfiguration());
+    client = new Pop3Client(GOKU_EMAIL, PASSWORD, HOST, PORT, new ClientConfiguration());
   }
 
   @Test
   public void receive(){
-    List<Email> emails = client.retrieve("INBOX", false);
+    List<Email> emails = client.retrieve(INBOX_FOLDER, false);
     assertThat(emails.size(), is(10));
     emails.forEach(e -> {
       assertThat(e, is(instanceOf(StoredEmail.class)));
@@ -73,6 +75,6 @@ public class Pop3ClientTestCase extends Email4JTestCase {
 
   @Override
   public String getProtocol() {
-    return "pop3";
+    return EmailProtocol.POP3.getName();
   }
 }

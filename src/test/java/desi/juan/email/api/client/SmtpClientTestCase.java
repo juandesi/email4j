@@ -53,6 +53,7 @@ import javax.mail.internet.MimeMessage;
 import desi.juan.email.Email4JTestCase;
 import desi.juan.email.api.Email;
 import desi.juan.email.api.client.configuration.ClientConfiguration;
+import desi.juan.email.internal.EmailProtocol;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -62,7 +63,7 @@ public class SmtpClientTestCase extends Email4JTestCase {
 
   @Before
   public void createClient() {
-    client = new SmtpClient(GOKU_EMAIL, PASSWORD, HOST, PORT, ClientConfiguration.getDefaultConfiguration());
+    client = new SmtpClient(GOKU_EMAIL, PASSWORD, HOST, PORT, new ClientConfiguration());
   }
 
   @Test
@@ -100,7 +101,7 @@ public class SmtpClientTestCase extends Email4JTestCase {
 
   @Override
   public String getProtocol() {
-    return "smtp";
+    return EmailProtocol.SMTP.getName();
   }
 
   private Email buildSimpleEmail() {
