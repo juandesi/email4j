@@ -24,16 +24,13 @@
 package desi.juan.email.api;
 
 import static desi.juan.email.api.EmailConstants.TEXT_PLAIN;
-import static desi.juan.email.api.EmailConstants.UTF8;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import desi.juan.email.internal.DefaultEmailBody;
 import desi.juan.email.internal.OutgoingEmail;
 
 /**
@@ -197,7 +194,7 @@ public final class EmailBuilder {
    * sets a plain text body to the email that is being built.
    */
   public EmailBuilder withBody(String body){
-    this.body = new DefaultEmailBody(body, TEXT_PLAIN, UTF8);
+    this.body = new EmailBody(body, Charsets.UTF_8, TEXT_PLAIN);
     return this;
   }
 

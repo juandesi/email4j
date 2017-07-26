@@ -34,7 +34,7 @@ import static desi.juan.email.EmailTestUtils.TRUNKS_EMAIL;
 import static desi.juan.email.EmailTestUtils.VEGETA_EMAIL;
 import static desi.juan.email.api.EmailBuilder.newEmail;
 import static desi.juan.email.api.EmailConstants.DEFAULT_CONTENT_TYPE;
-import static desi.juan.email.api.EmailConstants.UTF8;
+import static desi.juan.email.api.EmailConstants.TEXT_HTML;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -43,7 +43,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import desi.juan.email.internal.DefaultEmailBody;
+import com.google.common.base.Charsets;
 import desi.juan.email.internal.OutgoingEmail;
 import org.junit.Rule;
 import org.junit.Test;
@@ -90,7 +90,7 @@ public class EmailBuilderTestCase {
     Email email = newEmail()
       .to(singletonList(GOKU_EMAIL))
       .from(ROSHI_EMAIL)
-      .withBody(new DefaultEmailBody(html, "text/html", UTF8))
+      .withBody(new EmailBody(html, Charsets.UTF_8, TEXT_HTML))
       .build();
 
     assertThat(email.getHeaders().size(), is(0));
@@ -114,7 +114,7 @@ public class EmailBuilderTestCase {
   @Test
   public void noToEmail() {
     ee.expect(IllegalStateException.class);
-    ee.expectMessage(containsString("with no TO recipient addresses"));
+    ee.expectMessage(containsString("with no TO address(es)"));
     newEmail()
       .withAttachment(attachment2)
       .withSubject(EMAIL_SUBJECT)

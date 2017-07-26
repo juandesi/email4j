@@ -31,6 +31,7 @@ import static javax.mail.Message.RecipientType.BCC;
 import static javax.mail.Message.RecipientType.CC;
 import static javax.mail.Message.RecipientType.TO;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 
 import java.time.LocalDateTime;
@@ -170,10 +171,10 @@ public class StoredEmail implements Email {
 
       if (readContent) {
         EmailContentProcessor processor = EmailContentProcessor.getInstance(message);
-        this.body = new DefaultEmailBody(processor.getBody(), TEXT, "");
+        this.body = new EmailBody(processor.getBody(), Charsets.UTF_8, TEXT);
         this.attachments = processor.getAttachments();
       } else {
-        this.body = new EmptyEmailBody();
+        this.body = new EmailBody();
         this.attachments = emptyList();
       }
 
