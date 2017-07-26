@@ -64,17 +64,6 @@ public final class EmailConstants {
   public static final String DEFAULT_CONTENT_TYPE = TEXT_PLAIN + "; charset=" + Charsets.UTF_8;
 
   /**
-   * Default port value for SMTP servers.
-   */
-  public static final int SMTP_PORT = 25;
-
-  /**
-   * Default port value for SMTPS servers.
-   */
-  public static final int SMTPS_PORT = 465;
-
-
-  /**
    * Hide constructor
    */
   private EmailConstants() {}
