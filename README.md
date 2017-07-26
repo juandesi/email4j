@@ -38,7 +38,7 @@ share the retrieve operation (with differences but they both retrieve emails).
 This client is mainly used to send emails, it's composed by only one operation `send` that receives an email and sends it to the specified recipients.
 
 ```java
-SmtpClient client = new SmtpClient("juan", "desimoni", "juan.smtp.host", 123, ClientConfigurationBuilder.basicConfiguration());
+SmtpClient client = new SmtpClient("juan", "desimoni", "juan.smtp.host", SmtpClient.DEFAULT_SMTP_PORT, new ClientConfiguration());
 client.send(email) // pre-built outgoing email.
 ```
 
@@ -59,7 +59,7 @@ Of course there are other options for more complex body objects and attachments.
 The ImapClient talks directly to a mailbox where you can retrieve, move, mark or delete emails.
 
 ```java
-ImapClient client = new ImapClient("juan", "desimoni", "juan.imap.host", 995, ClientConfigurationBuilder.basicConfiguration());
+ImapClient client = new ImapClient("juan", "desimoni", "juan.imap.host", ImapClient.DEFAULT_IMAPS_PORT, new ClientConfiguration());
 ```
 
 The main ImapClient operation is the retrieve operation, you only need to specify a folder and the client will retrieve all the emails 
@@ -68,16 +68,16 @@ without opening their content, this means not marking the email as SEEN email, b
 emails.
 
 ```java
-imapClient.retrieve("INBOX", true);
+imapClient.retrieve(EmailConstants.INBOX_FOLDER, true);
 ```
 
 ### The Pop3Client 
 The Pop3Client talks directly to a mailbox where you can retrieve, move, delete emails. There a lot of similarities between 
-the ImapClient and this one, but the POP3 protocol have some restrictions or limitacions since is an older protocol and it's oriented
+the ImapClient and this one, but the POP3 protocol have some restrictions or limitations since is an older protocol and it's oriented
 for local working.
 
 ```java
-Pop3Client client = new Pop3Client("juan", "desimoni", "juan.pop3.host", 995, ClientConfigurationBuilder.basicConfiguration());
+Pop3Client client = new Pop3Client("juan", "desimoni", "juan.pop3.host", Pop3Client.DEFAULT_POP3S_PORT, new ClientConfiguration());
 ```
 
 Of course we also have a retrieve operation like the ImapClient, the difference between the Imap operation and this one, is that the 
