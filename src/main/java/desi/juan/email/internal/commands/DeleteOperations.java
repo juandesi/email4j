@@ -26,6 +26,7 @@ package desi.juan.email.internal.commands;
 import static java.lang.String.format;
 
 import javax.mail.Flags;
+import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -41,7 +42,7 @@ public final class DeleteOperations {
   public void deleteById(UIDFolder folder, long uid) {
     try {
       Message message = folder.getMessageByUID(uid);
-      message.setFlag(Flags.Flag.DELETED, true);
+      message.setFlag(Flag.DELETED, true);
       ((Folder)folder).expunge();
     } catch (MessagingException e) {
       throw new RetrieveEmailException(format("Error while deleting email of id:[%s] from folder", uid));
@@ -51,7 +52,7 @@ public final class DeleteOperations {
   public void deleteByNumber(Folder folder, int number) {
     try {
       Message message = folder.getMessage(number);
-      message.setFlag(Flags.Flag.DELETED, true);
+      message.setFlag(Flag.DELETED, true);
       folder.expunge();
     } catch (MessagingException e) {
       throw new RetrieveEmailException(format("Error while deleting email number:[%s] from folder [%s]", number, folder.getName()));
