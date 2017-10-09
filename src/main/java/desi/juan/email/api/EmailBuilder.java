@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import desi.juan.email.internal.OutgoingEmail;
 
@@ -43,7 +43,7 @@ public final class EmailBuilder {
   private List<String> to = new ArrayList<>();
   private List<String> bcc = new ArrayList<>();
   private List<String> cc = new ArrayList<>();
-  private Multimap<String, String> headers = ImmutableMultimap.of();
+  private Multimap<String, String> headers = ArrayListMultimap.create();
   private List<String> replyTo = new ArrayList<>();
   private List<EmailAttachment> attachments = new ArrayList<>();
   private EmailBody body;
