@@ -81,7 +81,7 @@ public class EmailBuilderTestCase {
     assertThat(email.getBody().getContentType(), is(DEFAULT_CONTENT_TYPE));
     assertThat(email.getSubject(), is(EMAIL_SUBJECT));
     assertThat(email.getHeaders().size(), is(1));
-    assertThat(email.getHeaders().get(HEADER_KEY), is(HEADER_VAL));
+    assertThat(email.getHeaders().get(HEADER_KEY), hasItems(HEADER_VAL));
   }
 
   @Test
