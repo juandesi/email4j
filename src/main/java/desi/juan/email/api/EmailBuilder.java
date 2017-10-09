@@ -225,7 +225,7 @@ public final class EmailBuilder {
 
     if (to.isEmpty())
     {
-      throw new IllegalStateException("Cannot build a Email message with no TO recipient addresses");
+      throw new IllegalStateException("Cannot build a Email message with no TO address(es)");
     }
 
     if (from.isEmpty())
