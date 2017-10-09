@@ -220,17 +220,17 @@ public final class EmailBuilder {
   public Email build() {
 
     if (body == null) {
-      throw new IllegalStateException("Cannot build a Email message with no body");
+      throw new IllegalStateException("Cannot build an Email message with no body");
     }
 
     if (to.isEmpty())
     {
-      throw new IllegalStateException("Cannot build a Email message with no TO address(es)");
+      throw new IllegalStateException("Cannot build an Email message with no TO address(es)");
     }
 
     if (from.isEmpty())
     {
-      throw new IllegalStateException("Cannot build a Email message with no from address");
+      throw new IllegalStateException("Cannot build an Email message with no from address");
     }
 
     return new OutgoingEmail(subject, from, to, bcc, cc, replyTo, body, attachments, headers);

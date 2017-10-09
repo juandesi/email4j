@@ -85,11 +85,11 @@ POP3 transport does not provide the capability to NOT open the fetched emails, s
 really read in POP3 since the concept does not exist.)
 
 ```java
-pop3Client.retrieve("INBOX");
+pop3Client.retrieve(EmailConstants.INBOX_FOLDER);
 ```
 
 ### More complex configurations
 
-The ClientConfigurationBuilder enables the construction of more complex configurations to enable encrypted conections using TLS/SSL
+The ClientConfiguration enables the construction of more complex configurations to enable encrypted conections using TLS/SSL
 and injecting custom properties to the underlying protocol if requeried.
 
