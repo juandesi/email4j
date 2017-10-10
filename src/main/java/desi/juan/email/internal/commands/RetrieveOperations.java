@@ -45,10 +45,7 @@ import desi.juan.email.internal.exception.RetrieveEmailException;
  */
 public final class RetrieveOperations {
 
-  /**
-   * 8 million
-   */
-  public static final int ALL_MESSAGES = 8000000;
+  public static final int ALL_MESSAGES = Integer.MAX_VALUE;
 
   /**
    * Retrieves limited number of the emails in the specified {@code folderName}.
@@ -59,6 +56,10 @@ public final class RetrieveOperations {
   public List<Email> retrieve(Folder folder, boolean readContent, int numToRetrieve) {
     ImmutableList.Builder<Email> emailsBuilder = ImmutableList.builder();
     try {
+      // if supposed to retrieve all messages, set numToRetrieve to number of messages in folder
+      if (numToRetrieve == ALL_MESSAGES) {
+        numToRetrieve = folder.getMessageCount();
+      }
       for (Message message : folder.getMessages(1, numToRetrieve)) {
         long uid = getEmailUid(folder, message);
         emailsBuilder.add(new StoredEmail(message, uid, readContent));
