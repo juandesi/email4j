@@ -44,12 +44,12 @@ import desi.juan.email.internal.connection.SenderConnection;
 public class SmtpClient {
 
   /**
-   * Default port value for POP3 servers.
+   * Default port value for SMTP servers.
    */
   public static final String DEFAULT_SMTP_PORT = "25";
 
   /**
-   * Default port value for POP3S servers.
+   * Default port value for SMTPS servers.
    */
   public static final String DEFAULT_SMTPS_PORT = "587";
 
