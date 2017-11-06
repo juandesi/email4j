@@ -59,7 +59,7 @@ import desi.juan.email.internal.exception.SendEmailException;
 /**
  * Represents the send operation.
  */
-public final class SendCommand {
+public final class SendOperations {
 
   /**
    * Sends an email message. The message will be sent to all recipient {@code to}, {@code cc},

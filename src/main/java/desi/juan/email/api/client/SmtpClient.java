@@ -32,7 +32,7 @@ import java.util.Optional;
 import desi.juan.email.api.Email;
 import desi.juan.email.api.client.configuration.ClientConfiguration;
 import desi.juan.email.api.security.TlsConfiguration;
-import desi.juan.email.internal.commands.SendCommand;
+import desi.juan.email.internal.commands.SendOperations;
 import desi.juan.email.internal.connection.SenderConnection;
 
 /**
@@ -54,7 +54,7 @@ public class SmtpClient {
   public static final String DEFAULT_SMTPS_PORT = "587";
 
   private SenderConnection connection;
-  private SendCommand sendCommand = new SendCommand();
+  private SendOperations sendOperations = new SendOperations();
 
   public SmtpClient(String username,
                     String password,
@@ -74,6 +74,6 @@ public class SmtpClient {
   }
 
   public void send(Email email) {
-    sendCommand.send(connection, email);
+    sendOperations.send(connection, email);
   }
 }
