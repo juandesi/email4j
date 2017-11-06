@@ -45,6 +45,31 @@ import desi.juan.email.internal.exception.RetrieveEmailException;
  */
 public final class RetrieveOperations {
 
+  public static final int ALL_MESSAGES = Integer.MAX_VALUE;
+
+  /**
+   * Retrieves limited number of the emails in the specified {@code folderName}.
+   * <p>
+   * For folder implementations (like IMAP) that support fetching without reading the content, if the content should NOT be read
+   * ({@code readContent} = false) the SEEN flag is not going to be set.
+   */
+  public List<Email> retrieve(Folder folder, boolean readContent, int numToRetrieve) {
+    ImmutableList.Builder<Email> emailsBuilder = ImmutableList.builder();
+    try {
+      // if supposed to retrieve all messages, set numToRetrieve to number of messages in folder
+      if (numToRetrieve == ALL_MESSAGES) {
+        numToRetrieve = folder.getMessageCount();
+      }
+      for (Message message : folder.getMessages(1, numToRetrieve)) {
+        long uid = getEmailUid(folder, message);
+        emailsBuilder.add(new StoredEmail(message, uid, readContent));
+      }
+      return emailsBuilder.build();
+    } catch (MessagingException me) {
+      throw new RetrieveEmailException("Error while retrieving emails", me);
+    }
+  }
+
   /**
    * Retrieves all the emails in the specified {@code folderName}.
    * <p>
@@ -52,16 +77,7 @@ public final class RetrieveOperations {
    * ({@code readContent} = false) the SEEN flag is not going to be set.
    */
   public List<Email> retrieve(Folder folder, boolean readContent) {
-    ImmutableList.Builder<Email> emailsBuilder = ImmutableList.builder();
-    try {
-      for (Message m : folder.getMessages()) {
-        long uid = getEmailUid(folder, m);
-        emailsBuilder.add(new StoredEmail(m, uid, readContent));
-      }
-      return emailsBuilder.build();
-    } catch (MessagingException me) {
-      throw new RetrieveEmailException("Error while retrieving emails", me);
-    }
+    return retrieve(folder, readContent, ALL_MESSAGES);
   }
 
   public Email retrieveById(UIDFolder folder, long uid) {

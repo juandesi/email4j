@@ -60,7 +60,7 @@ public enum EmailProtocol {
     /**
      * represents the secured Internet Message Access Protocol.
      */
-    IMAPS("imap", true),
+    IMAPS("imaps", true),
 
     /**
      * represents the Post Office Protocol.
@@ -70,7 +70,7 @@ public enum EmailProtocol {
     /**
      * represents the secured Post Office Protocol.
      */
-    POP3S("pop3", true);
+    POP3S("pop3s", true);
 
     private final String name;
     private final boolean secure;

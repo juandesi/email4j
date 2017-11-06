@@ -31,6 +31,7 @@ import static javax.mail.Message.RecipientType.BCC;
 import static javax.mail.Message.RecipientType.CC;
 import static javax.mail.Message.RecipientType.TO;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 
 import java.time.LocalDateTime;
@@ -49,6 +50,9 @@ import javax.mail.Header;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
 import desi.juan.email.api.Email;
 import desi.juan.email.api.EmailAttachment;
 import desi.juan.email.api.EmailBody;
@@ -106,7 +110,7 @@ public class StoredEmail implements Email {
   /**
    * The headers that this email carry.
    */
-  private final Map<String, String> headers;
+  private final Multimap<String, String> headers;
 
   /**
    * The subject of the email.
@@ -167,10 +171,10 @@ public class StoredEmail implements Email {
 
       if (readContent) {
         EmailContentProcessor processor = EmailContentProcessor.getInstance(message);
-        this.body = new DefaultEmailBody(processor.getBody(), TEXT, "");
+        this.body = new EmailBody(processor.getBody(), Charsets.UTF_8, TEXT);
         this.attachments = processor.getAttachments();
       } else {
-        this.body = new EmptyEmailBody();
+        this.body = new EmailBody();
         this.attachments = emptyList();
       }
 
@@ -249,7 +253,7 @@ public class StoredEmail implements Email {
    */
   @Override
   public Optional<LocalDateTime> getReceivedDate() {
-    return Optional.of(receivedDate);
+    return Optional.ofNullable(receivedDate);
   }
 
   /**
@@ -257,15 +261,15 @@ public class StoredEmail implements Email {
    */
   @Override
   public Optional<LocalDateTime> getSentDate() {
-    return Optional.of(sentDate);
+    return Optional.ofNullable(sentDate);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public Map<String, String> getHeaders() {
-    return headers != null ? ImmutableMap.copyOf(headers) : ImmutableMap.of();
+  public Multimap<String, String> getHeaders() {
+    return headers != null ? ImmutableMultimap.copyOf(headers) : ImmutableMultimap.of();
   }
 
   /**
@@ -305,8 +309,8 @@ public class StoredEmail implements Email {
   /**
    * Parses all the {@link Message} headers to a {@link Map}
    */
-  private Map<String, String> parseHeaders(Enumeration headers) {
-    ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+  private Multimap<String, String> parseHeaders(Enumeration headers) {
+    ImmutableMultimap.Builder<String, String> builder = ImmutableMultimap.builder();
     while (headers.hasMoreElements()) {
       Header header = (Header) headers.nextElement();
       builder.put(header.getName(), header.getValue());

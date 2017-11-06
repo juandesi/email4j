@@ -56,7 +56,7 @@ public abstract class Email4JTestCase {
   protected GreenMailUser user;
 
   @Before
-  public void setup() throws Exception {
+  public void setup() {
     ServerSetup serverSetup = setUpServer(PORT, getProtocol());
     server = new GreenMail(serverSetup);
     server.start();

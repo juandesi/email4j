@@ -24,14 +24,13 @@
 package desi.juan.email.api;
 
 import static desi.juan.email.api.EmailConstants.TEXT_PLAIN;
-import static desi.juan.email.api.EmailConstants.UTF8;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import desi.juan.email.internal.DefaultEmailBody;
+import com.google.common.base.Charsets;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import desi.juan.email.internal.OutgoingEmail;
 
 /**
@@ -44,7 +43,7 @@ public final class EmailBuilder {
   private List<String> to = new ArrayList<>();
   private List<String> bcc = new ArrayList<>();
   private List<String> cc = new ArrayList<>();
-  private Map<String, String> headers = new HashMap<>();
+  private Multimap<String, String> headers = ArrayListMultimap.create();
   private List<String> replyTo = new ArrayList<>();
   private List<EmailAttachment> attachments = new ArrayList<>();
   private EmailBody body;
@@ -155,7 +154,7 @@ public final class EmailBuilder {
    * @param headers the headers to be set.
    * @return this {@link EmailBuilder}
    */
-  public EmailBuilder withHeaders(Map<String, String> headers) {
+  public EmailBuilder withHeaders(Multimap<String, String> headers) {
     this.headers.putAll(headers);
     return this;
   }  
@@ -195,7 +194,7 @@ public final class EmailBuilder {
    * sets a plain text body to the email that is being built.
    */
   public EmailBuilder withBody(String body){
-    this.body = new DefaultEmailBody(body, TEXT_PLAIN, UTF8);
+    this.body = new EmailBody(body, Charsets.UTF_8, TEXT_PLAIN);
     return this;
   }
 
@@ -221,17 +220,17 @@ public final class EmailBuilder {
   public Email build() {
 
     if (body == null) {
-      throw new IllegalStateException("Cannot build a Email message with no body");
+      throw new IllegalStateException("Cannot build an Email message with no body");
     }
 
     if (to.isEmpty())
     {
-      throw new IllegalStateException("Cannot build a Email message with no TO recipient addresses");
+      throw new IllegalStateException("Cannot build an Email message with no TO address(es)");
     }
 
     if (from.isEmpty())
     {
-      throw new IllegalStateException("Cannot build a Email message with no from address");
+      throw new IllegalStateException("Cannot build an Email message with no from address");
     }
 
     return new OutgoingEmail(subject, from, to, bcc, cc, replyTo, body, attachments, headers);

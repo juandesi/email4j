@@ -25,6 +25,7 @@ package desi.juan.email.api.client;
 
 import static desi.juan.email.EmailTestUtils.GOKU_EMAIL;
 import static desi.juan.email.EmailTestUtils.getSinglePartTestMessage;
+import static desi.juan.email.api.EmailConstants.INBOX_FOLDER;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,7 +38,8 @@ import javax.mail.internet.MimeMessage;
 
 import desi.juan.email.Email4JTestCase;
 import desi.juan.email.api.Email;
-import desi.juan.email.api.client.configuration.ClientConfigurationBuilder;
+import desi.juan.email.api.client.configuration.ClientConfiguration;
+import desi.juan.email.internal.EmailProtocol;
 import desi.juan.email.internal.StoredEmail;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,14 +56,13 @@ public class ImapClientTestCase extends Email4JTestCase {
   }
 
   @Before
-  public void createClient()
-  {
-    client = new ImapClient(GOKU_EMAIL, PASSWORD, HOST, PORT, ClientConfigurationBuilder.getDefaultConfiguration());
+  public void createClient() {
+    client = new ImapClient(GOKU_EMAIL, PASSWORD, HOST, PORT, new ClientConfiguration());
   }
 
   @Test
   public void receive(){
-    List<Email> emails = client.retrieve("INBOX", true);
+    List<Email> emails = client.retrieve(INBOX_FOLDER, true);
     assertThat(emails.size(), is(10));
     emails.forEach(e -> {
       assertThat(e, is(instanceOf(StoredEmail.class)));
@@ -73,6 +74,6 @@ public class ImapClientTestCase extends Email4JTestCase {
 
   @Override
   public String getProtocol() {
-    return "imap";
+    return EmailProtocol.IMAP.getName();
   }
 }

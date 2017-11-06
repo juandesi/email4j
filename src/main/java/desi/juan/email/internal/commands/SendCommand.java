@@ -33,6 +33,7 @@ import static javax.mail.Part.ATTACHMENT;
 import static javax.mail.Part.INLINE;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +48,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import com.google.common.collect.Multimap;
 import desi.juan.email.api.Email;
 import desi.juan.email.api.EmailAttachment;
 import desi.juan.email.api.EmailBody;
@@ -75,7 +77,7 @@ public final class SendCommand {
       m.setSubject(email.getSubject());
       m.setReplyTo(toAddresses(email.getReplyToAddresses()));
 
-      for (Map.Entry<String, String> entry : email.getHeaders().entrySet()) {
+      for (Map.Entry<String, String> entry : email.getHeaders().entries()) {
         m.addHeader(entry.getKey(), entry.getValue());
       }
 

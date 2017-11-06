@@ -34,6 +34,7 @@ import javax.mail.Folder;
 
 import desi.juan.email.api.Email;
 import desi.juan.email.api.client.configuration.ClientConfiguration;
+import desi.juan.email.internal.commands.RetrieveOperations;
 
 /**
  * Encapsulates all the functionality necessary to manage POP3 mailboxes.
@@ -41,14 +42,14 @@ import desi.juan.email.api.client.configuration.ClientConfiguration;
 public class Pop3Client extends AbstractMailboxManagerClient {
 
   /**
-   * Default port value for IMAP servers.
+   * Default port value for POP3 servers.
    */
-  public static final String DEFAULT_IMAP_PORT = "143";
+  public static final String DEFAULT_POP3_PORT = "110";
 
   /**
-   * Default port value for IMAPS servers.
+   * Default port value for POP3S servers.
    */
-  public static final String DEFAULT_IMAPS_PORT = "993";
+  public static final String DEFAULT_POP3S_PORT = "995";
 
 
   public Pop3Client(String username,
@@ -60,14 +61,18 @@ public class Pop3Client extends AbstractMailboxManagerClient {
     super(config.getTlsConfig().isPresent() ? POP3S : POP3, username, password, host, port, config);
   }
 
-  public List<Email> retrieve(String folder, boolean deleteAfterRetrieve) {
-    Folder f = connection.getFolder(folder, READ_ONLY);
-    List<Email> emails = retriever.retrieve(f, true);
+  public List<Email> retrieve(String folder, boolean deleteAfterRetrieve, int numToRetrieve) {
+    Folder readOnlyFolder = connection.getFolder(folder, READ_ONLY);
+    List<Email> emails = retriever.retrieve(readOnlyFolder, true, numToRetrieve);
     if (deleteAfterRetrieve) {
-      //TODO: check input streams after the emails has been deleted
-      emails.forEach(e -> deleter.deleteByNumber(f, e.getNumber()));
+      //TODO: check input streams after the emails have been deleted
+      emails.forEach(e -> deleter.deleteByNumber(readOnlyFolder, e.getNumber()));
     }
     return emails;
+  }
+
+  public List<Email> retrieve(String folder, boolean deleteAfterRetrieve) {
+    return retrieve(folder, deleteAfterRetrieve, RetrieveOperations.ALL_MESSAGES);
   }
 
 }

@@ -23,15 +23,58 @@
  */
 package desi.juan.email.api;
 
-public interface EmailBody {
+import com.google.common.base.Charsets;
+
+import java.nio.charset.Charset;
+
+import static desi.juan.email.api.EmailConstants.DEFAULT_CONTENT_TYPE;
+import static java.lang.String.format;
+
+/**
+ * Represents and enables the construction of the content of an email with a body of type "text/*" and a specific character
+ * encoding.
+ */
+public class EmailBody {
 
   /**
    * @return the body content of the email as a {@link String} value.
    */
-  String getContent();
+  public String getContent() {
+    return body;
+  }
 
   /**
    * @return the content type of the body, one of text/plain or text/html
    */
-  String getContentType();
+  public String getContentType() {
+    return format("%s; charset=%s", contentType, charset);
+  }
+
+  /**
+   * Text body of the message content
+   */
+  private final String body;
+
+  /**
+   * ContentType of the body text. Example: "text/html" or "text/plain".
+   */
+  private final String contentType;
+
+  /**
+   * The character encoding of the body.
+   */
+  private final Charset charset;
+
+  public EmailBody() {
+    this("", Charsets.UTF_8, DEFAULT_CONTENT_TYPE);
+  }
+
+  public EmailBody(String body, Charset charset, String contentType) {
+    if (body == null || contentType == null || charset == null) {
+      throw new IllegalArgumentException("param cannot be null");
+    }
+    this.body = body;
+    this.contentType = contentType;
+    this.charset = charset;
+  }
 }

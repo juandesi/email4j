@@ -23,6 +23,11 @@
  */
 package desi.juan.email.api;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Utf8;
+
+import java.nio.charset.Charset;
+
 /**
  * Common email constant values.
  */
@@ -44,30 +49,19 @@ public final class EmailConstants {
   public static final String TEXT = "text/*";
 
   /**
-   * Default email body content type
+   * Plain text body content type
    */
   public static final String TEXT_PLAIN = "text/plain";
 
   /**
-   * Default email body charset
+   * HTML body content type
    */
-  public static final String UTF8 = "UTF-8";
+  public static final String TEXT_HTML = "text/html";
 
   /**
    * returns the default content type.
    */
-  public static final String DEFAULT_CONTENT_TYPE = TEXT_PLAIN + "; charset=" + UTF8 ;
-
-  /**
-   * Default port value for SMTP servers.
-   */
-  public static final String SMTP_PORT = "25";
-
-  /**
-   * Default port value for SMTPS servers.
-   */
-  public static final String SMTPS_PORT = "465";
-
+  public static final String DEFAULT_CONTENT_TYPE = TEXT_PLAIN + "; charset=" + Charsets.UTF_8;
 
   /**
    * Hide constructor
