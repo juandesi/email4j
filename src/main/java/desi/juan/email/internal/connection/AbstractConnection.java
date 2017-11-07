@@ -34,7 +34,7 @@ import desi.juan.email.internal.EmailProtocol;
 import desi.juan.email.internal.exception.EmailConnectionException;
 
 /**
- * Generic implementation for an email connection of a connector which operates over the SMTP, IMAP, POP3 and it's secure versions
+ * Generic implementation for an email connection of a connector which operates over the SMTP, IMAP, POP3 and its secure versions
  * protocols.
  * <p>
  * Performs the creation of a persistent set of properties that are used to configure the {@link Session} instance.
