@@ -45,6 +45,16 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
 
   /**
    * Default Constructor
+   *
+   * @param protocol
+   * @param username
+   * @param password
+   * @param host
+   * @param port
+   * @param connectionTimeout
+   * @param readTimeout
+   * @param writeTimeout
+   * @param properties
    */
   public MailboxManagerConnection(EmailProtocol protocol,
                                   String username,
@@ -76,6 +86,9 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
    * <p>
    * If there was an already opened folder and a different one is requested the opened folder will be closed and the new one will
    * be opened.
+   *
+   * @param mailBoxFolder
+   * @param openMode
    */
   public synchronized Folder getFolder(String mailBoxFolder, int openMode) {
     try {
@@ -86,7 +99,7 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
         closeFolder(false);
       }
 
-      folder = store.getFolder(mailBoxFolder);
+      folder = getFolder(mailBoxFolder);
       folder.open(openMode);
       return folder;
     } catch (MessagingException e) {
@@ -95,7 +108,22 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
   }
 
   /**
+   * Retrieves the folder. Unlike {@see #getFolder(String, int} this does not open the folder nor close any previously opened folder.
+   *
+   * @param mailBoxFolder
+   */
+  public synchronized Folder getFolder(String mailBoxFolder) {
+    try {
+      return store.getFolder(mailBoxFolder);
+    } catch (MessagingException e) {
+      throw new EmailException(format("Error while retrieving folder [%s]", mailBoxFolder), e);
+    }
+  }
+
+  /**
    * Closes the current connection folder.
+   *
+   * @param expunge
    */
   public synchronized void closeFolder(boolean expunge) {
     try {
@@ -126,6 +154,9 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
 
   /**
    * Checks if a mailBoxFolder name is the same name as the current folder.
+   *
+   * @param mailBoxFolder
+   * @return true if this is the current folder
    */
   private boolean isCurrentFolder(String mailBoxFolder) {
     return folder.getName().equalsIgnoreCase(mailBoxFolder);

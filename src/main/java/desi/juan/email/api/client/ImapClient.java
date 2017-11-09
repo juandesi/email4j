@@ -72,7 +72,7 @@ public class ImapClient extends MailboxManagerConnection implements DeleteOperat
   }
 
   public UIDFolder getUIDFolder(String folder, int openMode) {
-    Folder uidFolder = this.getFolder(folder, openMode);
+    Folder uidFolder = getFolder(folder, openMode);
     if (uidFolder instanceof UIDFolder) {
       return (UIDFolder) uidFolder;
     }
