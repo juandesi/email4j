@@ -33,7 +33,6 @@ import static javax.mail.Part.ATTACHMENT;
 import static javax.mail.Part.INLINE;
 
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -59,13 +58,13 @@ import desi.juan.email.internal.exception.SendEmailException;
 /**
  * Represents the send operation.
  */
-public final class SendOperations {
+public interface SendOperations {
 
   /**
    * Sends an email message. The message will be sent to all recipient {@code to}, {@code cc},
    * {@code bcc} specified in the message.
    */
-  public void send(SenderConnection connection, Email email) {
+  default void send(SenderConnection connection, Email email) {
     try {
 
       Message m = new MimeMessage(connection.getSession());
@@ -97,7 +96,7 @@ public final class SendOperations {
     }
   }
 
-  private MimeMultipart buildMultipart(EmailBody body, List<EmailAttachment> attachments) throws MessagingException {
+  static MimeMultipart buildMultipart(EmailBody body, List<EmailAttachment> attachments) throws MessagingException {
     MimeMultipart multipart = new MimeMultipart();
     MimeBodyPart bodyPart = new MimeBodyPart();
     bodyPart.setDisposition(INLINE);
@@ -120,18 +119,17 @@ public final class SendOperations {
     return multipart;
   }
 
-
   /**
    * Converts a {@link List} of {@link String}s representing email addresses into an {@link Address} array.
    */
-  private Address[] toAddresses(List<String> addresses) {
+  default Address[] toAddresses(List<String> addresses) {
     return addresses.stream().map(this::toAddress).toArray(Address[]::new);
   }
 
   /**
    * Converts a simple {@link String} representing an address into an {@link Address} instance
    */
-  private Address toAddress(String address) {
+  default Address toAddress(String address) {
     try {
       return new InternetAddress(address);
     } catch (AddressException e) {

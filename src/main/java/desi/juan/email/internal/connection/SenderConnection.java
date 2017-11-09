@@ -30,10 +30,10 @@ import desi.juan.email.internal.EmailProtocol;
 /**
  * A connection with a mail server for sending emails.
  */
-public final class SenderConnection extends AbstractConnection {
+public abstract class SenderConnection extends AbstractConnection {
 
   /**
-   * Creates a new instance.
+   * Default Constructor
    */
   public SenderConnection(EmailProtocol protocol,
                           String username,

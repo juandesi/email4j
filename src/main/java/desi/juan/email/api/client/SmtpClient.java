@@ -27,11 +27,9 @@ package desi.juan.email.api.client;
 import static desi.juan.email.internal.EmailProtocol.SMTP;
 import static desi.juan.email.internal.EmailProtocol.SMTPS;
 
-import java.util.Optional;
 
 import desi.juan.email.api.Email;
 import desi.juan.email.api.client.configuration.ClientConfiguration;
-import desi.juan.email.api.security.TlsConfiguration;
 import desi.juan.email.internal.commands.SendOperations;
 import desi.juan.email.internal.connection.SenderConnection;
 
@@ -41,7 +39,7 @@ import desi.juan.email.internal.connection.SenderConnection;
  * This class takes care of all low level details of interacting with an SMTP server and provides a
  * convenient higher level interface
  */
-public class SmtpClient {
+public class SmtpClient extends SenderConnection implements SendOperations {
 
   /**
    * Default port value for SMTP servers.
@@ -53,27 +51,24 @@ public class SmtpClient {
    */
   public static final String DEFAULT_SMTPS_PORT = "587";
 
-  private SenderConnection connection;
-  private SendOperations sendOperations = new SendOperations();
-
   public SmtpClient(String username,
                     String password,
                     String host,
                     int port,
-                    ClientConfiguration configuration) {
-    Optional<TlsConfiguration> tls = configuration.getTlsConfig();
-    this.connection = new SenderConnection(tls.isPresent() ? SMTPS : SMTP,
-                                           username,
-                                           password,
-                                           host,
-                                           port,
-                                           configuration.getConnectionTimeout(),
-                                           configuration.getReadTimeout(),
-                                           configuration.getWriteTimeout(),
-                                           configuration.getProperties());
+                    ClientConfiguration config)
+  {
+    super(config.getTlsConfig().isPresent() ? SMTPS : SMTP,
+            username,
+            password,
+            host,
+            port,
+            config.getConnectionTimeout(),
+            config.getReadTimeout(),
+            config.getWriteTimeout(),
+            config.getProperties());
   }
 
   public void send(Email email) {
-    sendOperations.send(connection, email);
+    send(this, email);
   }
 }
