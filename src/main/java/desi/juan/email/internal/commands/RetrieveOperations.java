@@ -43,9 +43,9 @@ import desi.juan.email.internal.exception.RetrieveEmailException;
 /**
  * Class that contains all the retrieve emails operations.
  */
-public final class RetrieveOperations {
+public interface RetrieveOperations {
 
-  public static final int ALL_MESSAGES = Integer.MAX_VALUE;
+  int ALL_MESSAGES = Integer.MAX_VALUE;
 
   /**
    * Retrieves limited number of the emails in the specified {@code folderName}.
@@ -53,7 +53,7 @@ public final class RetrieveOperations {
    * For folder implementations (like IMAP) that support fetching without reading the content, if the content should NOT be read
    * ({@code readContent} = false) the SEEN flag is not going to be set.
    */
-  public List<Email> retrieve(Folder folder, boolean readContent, int numToRetrieve) {
+  default List<Email> retrieve(Folder folder, boolean readContent, int numToRetrieve) {
     ImmutableList.Builder<Email> emailsBuilder = ImmutableList.builder();
     try {
       // if supposed to retrieve all messages, set numToRetrieve to number of messages in folder
@@ -76,11 +76,11 @@ public final class RetrieveOperations {
    * For folder implementations (like IMAP) that support fetching without reading the content, if the content should NOT be read
    * ({@code readContent} = false) the SEEN flag is not going to be set.
    */
-  public List<Email> retrieve(Folder folder, boolean readContent) {
+  default List<Email> retrieve(Folder folder, boolean readContent) {
     return retrieve(folder, readContent, ALL_MESSAGES);
   }
 
-  public Email retrieveById(UIDFolder folder, long uid) {
+  default Email retrieveById(UIDFolder folder, long uid) {
     try {
       return new StoredEmail(folder.getMessageByUID(uid), uid, true);
     } catch (MessagingException e) {
@@ -88,7 +88,7 @@ public final class RetrieveOperations {
     }
   }
 
-  private long getEmailUid(Folder folder, Message message) throws MessagingException {
+  default long getEmailUid(Folder folder, Message message) throws MessagingException {
     if (folder instanceof POP3Folder) {
       return parseLong(((POP3Folder) folder).getUID(message));
     }

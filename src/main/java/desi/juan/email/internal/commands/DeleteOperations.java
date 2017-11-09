@@ -23,39 +23,29 @@
  */
 package desi.juan.email.internal.commands;
 
-import static java.lang.String.format;
-
-import javax.mail.Flags;
-import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.UIDFolder;
 
-import desi.juan.email.internal.exception.RetrieveEmailException;
-
 /**
  * Class that contains the delete email operations.
  */
-public final class DeleteOperations {
+public interface DeleteOperations {
 
-  public void deleteById(UIDFolder folder, long uid) {
-    try {
-      Message message = folder.getMessageByUID(uid);
-      message.setFlag(Flag.DELETED, true);
-      ((Folder)folder).expunge();
-    } catch (MessagingException e) {
-      throw new RetrieveEmailException(format("Error while deleting email of id:[%s] from folder", uid));
-    }
+  default void deleteByUID(UIDFolder folderContainingMsg, long uid) throws MessagingException {
+      delete(folderContainingMsg.getMessageByUID(uid));
   }
 
-  public void deleteByNumber(Folder folder, int number) {
-    try {
-      Message message = folder.getMessage(number);
-      message.setFlag(Flag.DELETED, true);
-      folder.expunge();
-    } catch (MessagingException e) {
-      throw new RetrieveEmailException(format("Error while deleting email number:[%s] from folder [%s]", number, folder.getName()));
-    }
+  default void deleteByNumber(Folder folderContainingMsg, int msgNum) throws MessagingException {
+      delete(folderContainingMsg.getMessage(msgNum));
+  }
+
+  default void delete(Message msg) {
+    FlagOperations.delete(msg);
+  }
+
+  default void delete(Message[] msgs) {
+    FlagOperations.delete(msgs);
   }
 }
