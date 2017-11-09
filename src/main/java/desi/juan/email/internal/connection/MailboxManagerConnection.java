@@ -38,13 +38,13 @@ import desi.juan.email.internal.exception.EmailException;
 /**
  * A connection with a mail server for retrieving emails from an specific folder.
  */
-public class MailboxManagerConnection extends AbstractConnection {
+public abstract class MailboxManagerConnection extends AbstractConnection {
 
   private final Store store;
   private Folder folder;
 
   /**
-   * Creates a new instance of the of the {@link MailboxManagerConnection} secured by TLS.
+   * Default Constructor
    */
   public MailboxManagerConnection(EmailProtocol protocol,
                                   String username,

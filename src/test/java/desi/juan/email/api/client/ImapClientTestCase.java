@@ -26,6 +26,7 @@ package desi.juan.email.api.client;
 import static desi.juan.email.EmailTestUtils.GOKU_EMAIL;
 import static desi.juan.email.EmailTestUtils.getSinglePartTestMessage;
 import static desi.juan.email.api.EmailConstants.INBOX_FOLDER;
+import static javax.mail.Folder.READ_ONLY;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,6 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.io.IOException;
 import java.util.List;
 
+import javax.mail.Folder;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -62,7 +64,7 @@ public class ImapClientTestCase extends Email4JTestCase {
 
   @Test
   public void receive(){
-    List<Email> emails = client.retrieve(INBOX_FOLDER, true);
+    List<Email> emails = client.retrieve(client.getFolder(INBOX_FOLDER, READ_ONLY), true);
     assertThat(emails.size(), is(10));
     emails.forEach(e -> {
       assertThat(e, is(instanceOf(StoredEmail.class)));

@@ -27,27 +27,21 @@ package desi.juan.email.api.client;
 import static desi.juan.email.internal.EmailProtocol.IMAP;
 import static desi.juan.email.internal.EmailProtocol.IMAPS;
 import static java.lang.String.format;
-import static javax.mail.Folder.READ_ONLY;
-import static javax.mail.Folder.READ_WRITE;
-
-import java.util.List;
 
 import javax.mail.Folder;
 import javax.mail.UIDFolder;
 
-import desi.juan.email.api.Email;
-import desi.juan.email.api.EmailFlags.EmailFlag;
 import desi.juan.email.api.client.configuration.ClientConfiguration;
-import desi.juan.email.internal.commands.MarkEmailCommand;
+import desi.juan.email.internal.commands.DeleteOperations;
+import desi.juan.email.internal.commands.FolderOperations;
 import desi.juan.email.internal.commands.RetrieveOperations;
+import desi.juan.email.internal.connection.MailboxManagerConnection;
 import desi.juan.email.internal.exception.EmailException;
 
 /**
  * Encapsulates all the functionality necessary to manage IMAP mailboxes.
  */
-public class ImapClient extends AbstractMailboxManagerClient {
-
-  private MarkEmailCommand marker = new MarkEmailCommand();
+public class ImapClient extends MailboxManagerConnection implements DeleteOperations, FolderOperations, RetrieveOperations {
 
   /**
    * Default port value for IMAP servers.
@@ -66,35 +60,19 @@ public class ImapClient extends AbstractMailboxManagerClient {
                     int port,
                     ClientConfiguration config)
   {
-    super(config.getTlsConfig().isPresent() ? IMAPS : IMAP, username, password, host, port, config);
+    super(config.getTlsConfig().isPresent() ? IMAPS : IMAP,
+            username,
+            password,
+            host,
+            port,
+            config.getConnectionTimeout(),
+            config.getReadTimeout(),
+            config.getWriteTimeout(),
+            config.getProperties());
   }
 
-  public List<Email> retrieve(String folder, boolean readContent) {
-    return retrieve(folder, readContent, RetrieveOperations.ALL_MESSAGES);
-  }
-
-  public List<Email> retrieve(String folder, boolean readContent, int numToRetrieve) {
-    return retriever.retrieve(connection.getFolder(folder, READ_ONLY), readContent, numToRetrieve);
-  }
-
-  public Email retrieveById(String folder, long id) {
-    return retriever.retrieveById(getUIDFolder(folder, READ_ONLY), id);
-  }
-
-  public void deleteById(String folder, long id) {
-    deleter.deleteById(getUIDFolder(folder, READ_WRITE), id);
-  }
-
-  public void markEmail(String folder, EmailFlag flag, long id) {
-    marker.markById(getUIDFolder(folder, READ_WRITE), flag, id);
-  }
-
-  public void deleteByNumber(String folder, int number) {
-    deleter.deleteByNumber(connection.getFolder(folder, READ_WRITE), number);
-  }
-
-  private UIDFolder getUIDFolder(String folder, int mode) {
-    Folder uidFolder = connection.getFolder(folder, mode);
+  public UIDFolder getUIDFolder(String folder, int openMode) {
+    Folder uidFolder = this.getFolder(folder, openMode);
     if (uidFolder instanceof UIDFolder) {
       return (UIDFolder) uidFolder;
     }

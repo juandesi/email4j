@@ -31,15 +31,18 @@ import static javax.mail.Folder.READ_ONLY;
 import java.util.List;
 
 import javax.mail.Folder;
+import javax.mail.MessagingException;
 
 import desi.juan.email.api.Email;
 import desi.juan.email.api.client.configuration.ClientConfiguration;
+import desi.juan.email.internal.commands.DeleteOperations;
 import desi.juan.email.internal.commands.RetrieveOperations;
+import desi.juan.email.internal.connection.MailboxManagerConnection;
 
 /**
  * Encapsulates all the functionality necessary to manage POP3 mailboxes.
  */
-public class Pop3Client extends AbstractMailboxManagerClient {
+public class Pop3Client extends MailboxManagerConnection implements DeleteOperations, RetrieveOperations {
 
   /**
    * Default port value for POP3 servers.
@@ -58,21 +61,43 @@ public class Pop3Client extends AbstractMailboxManagerClient {
                     int port,
                     ClientConfiguration config)
   {
-    super(config.getTlsConfig().isPresent() ? POP3S : POP3, username, password, host, port, config);
+    super(config.getTlsConfig().isPresent() ? POP3S : POP3,
+            username,
+            password,
+            host,
+            port,
+            config.getConnectionTimeout(),
+            config.getReadTimeout(),
+            config.getWriteTimeout(),
+            config.getProperties());
   }
 
-  public List<Email> retrieve(String folder, boolean deleteAfterRetrieve, int numToRetrieve) {
-    Folder readOnlyFolder = connection.getFolder(folder, READ_ONLY);
-    List<Email> emails = retriever.retrieve(readOnlyFolder, true, numToRetrieve);
-    if (deleteAfterRetrieve) {
+  public List<Email> retrieve(String folder, boolean isDeleteAfterRetrieve, int numToRetrieve) {
+    Folder readOnlyFolder = getFolder(folder, READ_ONLY);
+    List<Email> emails = retrieve(readOnlyFolder, true, numToRetrieve);
+    if (isDeleteAfterRetrieve) {
       //TODO: check input streams after the emails have been deleted
-      emails.forEach(e -> deleter.deleteByNumber(readOnlyFolder, e.getNumber()));
+      emails.forEach(e -> {
+        try {
+          deleteByNumber(readOnlyFolder, e.getNumber());
+        } catch (MessagingException e1) {
+          e1.printStackTrace();
+          //TODO: this needs to be better logged
+        }
+      });
     }
     return emails;
   }
 
-  public List<Email> retrieve(String folder, boolean deleteAfterRetrieve) {
-    return retrieve(folder, deleteAfterRetrieve, RetrieveOperations.ALL_MESSAGES);
+  public List<Email> retrieve(String folder, boolean isDeleteAfterRetrieve) {
+    return retrieve(folder, isDeleteAfterRetrieve, RetrieveOperations.ALL_MESSAGES);
   }
 
+  public List<Email> retrieve(String folder) {
+    return retrieve(folder, false);
+  }
+
+  public List<Email> retrieve(String folder, int numToRetrieve) {
+    return retrieve(folder, false, numToRetrieve);
+  }
 }
