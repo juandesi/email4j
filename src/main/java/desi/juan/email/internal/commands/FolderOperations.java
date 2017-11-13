@@ -1,6 +1,7 @@
 /**
  * The MIT License (MIT)
  *
+ * Copyright (c) 2016 Juan Desimoni
  * Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,185 +24,190 @@
  */
 package desi.juan.email.internal.commands;
 
-import com.google.common.collect.ImmutableList;
-import com.sun.mail.pop3.POP3Folder;
-import desi.juan.email.api.Email;
-import desi.juan.email.internal.StoredEmail;
-import desi.juan.email.internal.exception.RetrieveEmailException;
+import static java.lang.String.format;
+
+import java.util.Date;
+import java.util.List;
 
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.UIDFolder;
-import javax.mail.search.*;
+import javax.mail.search.SearchTerm;
 
-import java.util.Date;
-import java.util.List;
-
-import static desi.juan.email.internal.commands.RetrieveOperations.ALL_MESSAGES;
-import static java.lang.Long.parseLong;
-import static java.lang.String.format;
+import desi.juan.email.api.Email;
+import desi.juan.email.internal.StoredEmail;
+import desi.juan.email.internal.exception.RetrieveEmailException;
 
 /**
- * Class that contains the folder email operations.
+ * Interface for folder operations.
  */
-public class FolderOperations {
-    /**
-     * Retrieves limited number of the emails in the specified {@code folderName}.
-     * <p>
-     * For folder implementations (like IMAP) that support fetching without reading the content, if the content should NOT be read
-     * ({@code readContent} = false) the SEEN flag is not going to be set.
-     *
-     * @param folder
-     * @param readContent
-     * @param numToRetrieve
-     *
-     * @see Folder#getMessages(int, int)
-     *
-     * @return Message[]
-     */
-    protected static Message[] getMessages(Folder folder, boolean readContent, int numToRetrieve) {
-        //TODO: how is readContent being used
-        try {
-            // if supposed to retrieve all messages, set numToRetrieve to number of messages in folder
-            if (numToRetrieve == ALL_MESSAGES) {
-                numToRetrieve = folder.getMessageCount();
-            }
-            return folder.getMessages(1, numToRetrieve);
-        } catch (MessagingException me) {
-            throw new RetrieveEmailException("Error while retrieving emails", me);
-        }
-    }
+public interface FolderOperations {
 
-    /**
-     * Transform array of messages into List<Email>.
-     *
-     * @see #getEmailUid(Folder, Message)
-     * @see Message#getFolder()
-     *
-     * @param messages
-     * @param readContent
-     *
-     * @return List<Email>
-     */
-    protected static List<Email> toStoredList(Message[] messages, boolean readContent) {
-        ImmutableList.Builder<Email> emailsBuilder = ImmutableList.builder();
-        for (Message message : messages) {
-            long uid = getEmailUid(message.getFolder(), message);
-            emailsBuilder.add(new StoredEmail(message, uid, readContent));
-        }
-        System.out.println("Done storing");
-        return emailsBuilder.build();
-    }
+  int ALL_MESSAGES = Integer.MAX_VALUE;
 
-    /**
-     * Get UID of email message.
-     * @param folder
-     * @param message
-     *
-     * @return UID of email message
-     */
-    protected static long getEmailUid(Folder folder, Message message) {
-        try {
-            if (folder instanceof POP3Folder) {
-                return parseLong(((POP3Folder) folder).getUID(message));
-            }
-            if (folder instanceof UIDFolder) {
-                return ((UIDFolder) folder).getUID(message);
-            }
-        } catch (MessagingException e) {
-            throw new RetrieveEmailException(format("Cannot retrieve email:[%s] from folder [%s]", message, folder));
-        }
-        //TODO: maybe this should fail instead.
-        return -1;
+  /**
+   * Retrieve emailby UID
+   *
+   * @param folder
+   * @param uid
+   *
+   * @return Email
+   */
+  default Email retrieveById(UIDFolder folder, long uid) {
+    try {
+      Message email = folder.getMessageByUID(uid);
+      return new StoredEmail(email, uid, true);
+    } catch (MessagingException e) {
+      throw new RetrieveEmailException(format("Cannot retrieve email id:[%s] from folder [%s]", uid, folder));
     }
+  }
 
-    /**
-     * Search in folder using terms combined with AND.
-     *
-     * @see Folder#search(SearchTerm)
-     *
-     * @param folder
-     * @param terms
-     *
-     * @return Message[]
-     */
-    protected static Message[] search(Folder folder, SearchTerm... terms) throws MessagingException {
-        SearchTerm andTerm = new AndTerm(terms);
-        return folder.search(andTerm);
+  /**
+   * Helper method. Retrieves all messages in folder.
+   *
+   * @see #retrieve(Folder, boolean, int)
+   *
+   * @param folder
+   * @param readContent
+   *
+   * @return List<Email>
+   */
+  default List<Email> retrieve(Folder folder, boolean readContent) {
+    return retrieve(folder, readContent, ALL_MESSAGES);
+  }
+
+  /**
+   *
+   * Helper method
+   * @see FolderOperationsInternal#getMessages(Folder, boolean, int)
+   * @see FolderOperationsInternal#toStoredList(Message[], boolean)
+   *
+   * @param folder
+   * @param readContent
+   * @param numToRetrieve
+   *
+   * @return List<Email>
+   *
+   */
+  default List<Email> retrieve(Folder folder, boolean readContent, int numToRetrieve) {
+    Message[] emails = FolderOperationsInternal.getMessages(folder, readContent, numToRetrieve);
+    return FolderOperationsInternal.toStoredList(emails, readContent);
+  }
+
+  /**
+   * Helper method
+   *
+   * @see FolderOperationsInternal#search(Folder, SearchTerm...)
+   * @see FolderOperationsInternal#toStoredList(Message[], boolean)
+   *
+   * @param folder
+   * @param readContent
+   * @param terms
+   *
+   * @return List<Email>
+   */
+  default List<Email> search(Folder folder, boolean readContent, SearchTerm... terms) throws MessagingException {
+    Message[] emails = FolderOperationsInternal.search(folder, terms);
+    return FolderOperationsInternal.toStoredList(emails, readContent);
+  }
+
+  /**
+   * Helper method
+   *
+   * @see FolderOperationsInternal#search(Folder, Date, Date)
+   * @see FolderOperationsInternal#toStoredList(Message[], boolean)
+   *
+   * @param folder
+   * @param readContent
+   * @param olderThan
+   * @param newerThan
+   *
+   * @return List<Email>
+   */
+  default List<Email> search(Folder folder, boolean readContent, Date olderThan, Date newerThan) throws MessagingException {
+    Message[] emails = FolderOperationsInternal.search(folder, olderThan, newerThan);
+    return FolderOperationsInternal.toStoredList(emails, readContent);
+  }
+
+  /**
+   * Helper method
+   * @see FolderOperationsInternal#getMessages(Folder, boolean, int)
+   * @see FolderOperationsInternal#move(Folder, Message[], Folder)
+   * @see FolderOperationsInternal#toStoredList(Message[], boolean)
+   *
+   * @param fromFolder
+   * @param readContent
+   * @param numToRetrieve
+   * @param moveToFolder
+   *
+   * @return List<Email>
+   */
+  default List<Email> retrieveAndMove(Folder fromFolder, boolean readContent, int numToRetrieve, Folder moveToFolder) throws MessagingException {
+    Message[] emails = FolderOperationsInternal.getMessages(fromFolder, readContent, numToRetrieve);
+    List<Email> storedEmails = FolderOperationsInternal.toStoredList(emails, readContent);
+    if (emails.length > 1) {
+      FolderOperationsInternal.move(fromFolder, emails, moveToFolder);
     }
+    return storedEmails;
+  }
 
-    /**
-     * Helper method
-     *
-     * @see #search(Folder, Date, Date)
-     *
-     * @param folder
-     * @param olderThan
-     * @param newerThan
-     *
-     * @return Message[]
-     *
-     * @throws MessagingException
-     */
-    protected static Message[] search(Folder folder, Date olderThan, Date newerThan) throws MessagingException {
-        SearchTerm ot = new ReceivedDateTerm(ComparisonTerm.LT, olderThan);
-        SearchTerm nt = new ReceivedDateTerm(ComparisonTerm.GT, newerThan);
-
-        return search(folder, nt);
+  /**
+   * Helper method
+   * @see FolderOperationsInternal#search(Folder, SearchTerm...)
+   * @see FolderOperationsInternal#move(Folder, Message[], Folder)
+   * @see FolderOperationsInternal#toStoredList(Message[], boolean)
+   *
+   * @param searchInfolder
+   * @param readContent
+   * @param terms
+   * @param moveToFolder
+   *
+   * @return List<Email>
+   */
+  default List<Email> searchAndMove(Folder searchInfolder, boolean readContent, Folder moveToFolder, SearchTerm... terms) throws MessagingException {
+    Message[] emails = FolderOperationsInternal.search(searchInfolder, terms);
+    List<Email> storedEmails = FolderOperationsInternal.toStoredList(emails, readContent);
+    if (emails.length > 1) {
+      FolderOperationsInternal.move(searchInfolder, emails, moveToFolder);
     }
+    return storedEmails;
+  }
 
-    /**
-     * Move messages from one folder to another.
-     * @see Folder#copyMessages(Message[], Folder)
-     * @see FlagOperations#delete(Message[])
-     *
-     * @param fromFolder
-     * @param messages
-     * @param toFolder
-     *
-     * @throws MessagingException
-     */
-    protected static void move(Folder fromFolder, Message[] messages, Folder toFolder) throws MessagingException {
-        if (messages.length < 1) {
-            throw new MessagingException("No messages to move");
-        }
-        //try {
-            fromFolder.copyMessages(messages, toFolder);
-            //TODO: should we wait?
-            //fromFolder.wait(2000);
-            FlagOperations.delete(messages);
-       // } catch (InterruptedException e) {
-          //  e.printStackTrace();
-       // }
+  /**
+   * Helper method
+   * @see FolderOperationsInternal#search(Folder, Date, Date)
+   * @see FolderOperationsInternal#move(Folder, Message[], Folder)
+   * @see FolderOperationsInternal#toStoredList(Message[], boolean)
+   *
+   * @param searchInfolder
+   * @param readContent
+   * @param moveToFolder
+   * @param newerThan
+   * @param olderThan
+   *
+   * @return List<Email>
+   */
+  default List<Email> searchAndMove(Folder searchInfolder, boolean readContent, Folder moveToFolder, Date olderThan, Date newerThan) throws MessagingException {
+    Message[] emails = FolderOperationsInternal.search(searchInfolder, olderThan, newerThan);
+    System.out.println("# messages: " + emails.length);
+    List<Email> storedEmails = FolderOperationsInternal.toStoredList(emails, readContent);
+    if (emails.length > 1) {
+      FolderOperationsInternal.move(searchInfolder, emails, moveToFolder);
     }
+    return storedEmails;
+  }
 
-    /**
-     * Helper method
-     * @see #move(Folder, Message[], Folder)
-     *
-     * @param fromFolder
-     * @param message
-     * @param toFolder
-     *
-     */
-    protected static void move(Folder fromFolder, Message message, Folder toFolder) throws MessagingException {
-        move(fromFolder, new Message[] {message}, toFolder);
-    }
-
-    /**
-     * Helper method
-     * @see #move(Folder, Message[], Folder)
-     * @see #getMessages(Folder, boolean, int)
-     *
-     * @param fromFolder
-     * @param readContent
-     * @param numToRetrieve
-     * @param toFolder
-     *
-     * @throws MessagingException
-     */
-    protected static void move(Folder fromFolder, boolean readContent, int numToRetrieve, Folder toFolder) throws MessagingException {
-        move(fromFolder, getMessages(fromFolder, readContent, numToRetrieve), toFolder);
-    }
+  /**
+   * Helper method
+   * @see FolderOperationsInternal#move(Folder, boolean, int, Folder)
+   *
+   * @param fromFolder
+   * @param readContent
+   * @param numToRetrieve
+   * @param toFolder
+   */
+  default void move(Folder fromFolder, boolean readContent, int numToRetrieve, Folder toFolder) throws MessagingException {
+    FolderOperationsInternal.move(fromFolder, readContent, numToRetrieve, toFolder);
+  }
 }
