@@ -34,14 +34,13 @@ import javax.mail.UIDFolder;
 import desi.juan.email.api.client.configuration.ClientConfiguration;
 import desi.juan.email.internal.commands.DeleteOperations;
 import desi.juan.email.internal.commands.FolderOperations;
-import desi.juan.email.internal.commands.RetrieveOperations;
 import desi.juan.email.internal.connection.MailboxManagerConnection;
 import desi.juan.email.internal.exception.EmailException;
 
 /**
  * Encapsulates all the functionality necessary to manage IMAP mailboxes.
  */
-public class ImapClient extends MailboxManagerConnection implements DeleteOperations, FolderOperations, RetrieveOperations {
+public class ImapClient extends MailboxManagerConnection implements DeleteOperations, FolderOperations {
 
   /**
    * Default port value for IMAP servers.

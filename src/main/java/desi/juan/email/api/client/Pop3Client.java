@@ -36,13 +36,13 @@ import javax.mail.MessagingException;
 import desi.juan.email.api.Email;
 import desi.juan.email.api.client.configuration.ClientConfiguration;
 import desi.juan.email.internal.commands.DeleteOperations;
-import desi.juan.email.internal.commands.RetrieveOperations;
+import desi.juan.email.internal.commands.FolderOperations;
 import desi.juan.email.internal.connection.MailboxManagerConnection;
 
 /**
  * Encapsulates all the functionality necessary to manage POP3 mailboxes.
  */
-public class Pop3Client extends MailboxManagerConnection implements DeleteOperations, RetrieveOperations {
+public class Pop3Client extends MailboxManagerConnection implements DeleteOperations, FolderOperations {
 
   /**
    * Default port value for POP3 servers.
@@ -90,7 +90,7 @@ public class Pop3Client extends MailboxManagerConnection implements DeleteOperat
   }
 
   public List<Email> retrieve(String folder, boolean isDeleteAfterRetrieve) {
-    return retrieve(folder, isDeleteAfterRetrieve, RetrieveOperations.ALL_MESSAGES);
+    return retrieve(folder, isDeleteAfterRetrieve, FolderOperations.ALL_MESSAGES);
   }
 
   public List<Email> retrieve(String folder) {

@@ -56,7 +56,7 @@ import desi.juan.email.internal.exception.EmailException;
 import desi.juan.email.internal.exception.SendEmailException;
 
 /**
- * Represents the send operation.
+ * Interface for the send operation.
  */
 public interface SendOperations {
 

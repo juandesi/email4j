@@ -100,6 +100,10 @@ public interface FlagOperations {
     expungeFolder(messages[0].getFolder());
   }
 
+  /**
+   * Calls expunge on folder.
+   * @param folder
+   */
   static void expungeFolder(Folder folder) {
     try {
       folder.expunge();

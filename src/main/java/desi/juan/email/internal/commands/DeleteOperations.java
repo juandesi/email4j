@@ -29,7 +29,7 @@ import javax.mail.MessagingException;
 import javax.mail.UIDFolder;
 
 /**
- * Class that contains the delete email operations.
+ * Interface for delete email operations.
  */
 public interface DeleteOperations {
 
