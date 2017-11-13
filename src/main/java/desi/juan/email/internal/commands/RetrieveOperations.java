@@ -2,6 +2,7 @@
  * The MIT License (MIT)
  *
  * Copyright (c) 2016 Juan Desimoni
+ * Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,79 +24,190 @@
  */
 package desi.juan.email.internal.commands;
 
-import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 
-import com.google.common.collect.ImmutableList;
-import com.sun.mail.pop3.POP3Folder;
-
+import java.util.Date;
 import java.util.List;
 
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.UIDFolder;
+import javax.mail.search.SearchTerm;
 
 import desi.juan.email.api.Email;
 import desi.juan.email.internal.StoredEmail;
 import desi.juan.email.internal.exception.RetrieveEmailException;
 
 /**
- * Class that contains all the retrieve emails operations.
+ * Class that contains the folder operations.
  */
 public interface RetrieveOperations {
 
   int ALL_MESSAGES = Integer.MAX_VALUE;
 
   /**
-   * Retrieves limited number of the emails in the specified {@code folderName}.
-   * <p>
-   * For folder implementations (like IMAP) that support fetching without reading the content, if the content should NOT be read
-   * ({@code readContent} = false) the SEEN flag is not going to be set.
+   * Retrieve emailby UID
+   *
+   * @param folder
+   * @param uid
+   *
+   * @return Email
    */
-  default List<Email> retrieve(Folder folder, boolean readContent, int numToRetrieve) {
-    ImmutableList.Builder<Email> emailsBuilder = ImmutableList.builder();
-    try {
-      // if supposed to retrieve all messages, set numToRetrieve to number of messages in folder
-      if (numToRetrieve == ALL_MESSAGES) {
-        numToRetrieve = folder.getMessageCount();
-      }
-      for (Message message : folder.getMessages(1, numToRetrieve)) {
-        long uid = getEmailUid(folder, message);
-        emailsBuilder.add(new StoredEmail(message, uid, readContent));
-      }
-      return emailsBuilder.build();
-    } catch (MessagingException me) {
-      throw new RetrieveEmailException("Error while retrieving emails", me);
-    }
-  }
-
-  /**
-   * Retrieves all the emails in the specified {@code folderName}.
-   * <p>
-   * For folder implementations (like IMAP) that support fetching without reading the content, if the content should NOT be read
-   * ({@code readContent} = false) the SEEN flag is not going to be set.
-   */
-  default List<Email> retrieve(Folder folder, boolean readContent) {
-    return retrieve(folder, readContent, ALL_MESSAGES);
-  }
-
   default Email retrieveById(UIDFolder folder, long uid) {
     try {
-      return new StoredEmail(folder.getMessageByUID(uid), uid, true);
+      Message email = folder.getMessageByUID(uid);
+      return new StoredEmail(email, uid, true);
     } catch (MessagingException e) {
       throw new RetrieveEmailException(format("Cannot retrieve email id:[%s] from folder [%s]", uid, folder));
     }
   }
 
-  default long getEmailUid(Folder folder, Message message) throws MessagingException {
-    if (folder instanceof POP3Folder) {
-      return parseLong(((POP3Folder) folder).getUID(message));
+  /**
+   * Helper method. Retrieves all messages in folder.
+   *
+   * @see #retrieve(Folder, boolean, int)
+   *
+   * @param folder
+   * @param readContent
+   *
+   * @return List<Email>
+   */
+  default List<Email> retrieve(Folder folder, boolean readContent) {
+    return retrieve(folder, readContent, ALL_MESSAGES);
+  }
+
+  /**
+   *
+   * Helper method
+   * @see FolderOperations#getMessages(Folder, boolean, int)
+   * @see FolderOperations#toStoredList(Message[], boolean)
+   *
+   * @param folder
+   * @param readContent
+   * @param numToRetrieve
+   *
+   * @return List<Email>
+   *
+   */
+  default List<Email> retrieve(Folder folder, boolean readContent, int numToRetrieve) {
+    Message[] emails = FolderOperations.getMessages(folder, readContent, numToRetrieve);
+    return FolderOperations.toStoredList(emails, readContent);
+  }
+
+  /**
+   * Helper method
+   *
+   * @see FolderOperations#search(Folder, SearchTerm...)
+   * @see FolderOperations#toStoredList(Message[], boolean)
+   *
+   * @param folder
+   * @param readContent
+   * @param terms
+   *
+   * @return List<Email>
+   */
+  default List<Email> search(Folder folder, boolean readContent, SearchTerm... terms) throws MessagingException {
+    Message[] emails = FolderOperations.search(folder, terms);
+    return FolderOperations.toStoredList(emails, readContent);
+  }
+
+  /**
+   * Helper method
+   *
+   * @see FolderOperations#search(Folder, Date, Date)
+   * @see FolderOperations#toStoredList(Message[], boolean)
+   *
+   * @param folder
+   * @param readContent
+   * @param olderThan
+   * @param newerThan
+   *
+   * @return List<Email>
+   */
+  default List<Email> search(Folder folder, boolean readContent, Date olderThan, Date newerThan) throws MessagingException {
+    Message[] emails = FolderOperations.search(folder, olderThan, newerThan);
+    return FolderOperations.toStoredList(emails, readContent);
+  }
+
+  /**
+   * Helper method
+   * @see FolderOperations#getMessages(Folder, boolean, int)
+   * @see FolderOperations#move(Folder, Message[], Folder)
+   * @see FolderOperations#toStoredList(Message[], boolean)
+   *
+   * @param fromFolder
+   * @param readContent
+   * @param numToRetrieve
+   * @param moveToFolder
+   *
+   * @return List<Email>
+   */
+  default List<Email> retrieveAndMove(Folder fromFolder, boolean readContent, int numToRetrieve, Folder moveToFolder) throws MessagingException {
+    Message[] emails = FolderOperations.getMessages(fromFolder, readContent, numToRetrieve);
+    List<Email> storedEmails = FolderOperations.toStoredList(emails, readContent);
+    if (emails.length > 1) {
+      FolderOperations.move(fromFolder, emails, moveToFolder);
     }
-    if (folder instanceof UIDFolder) {
-      return ((UIDFolder) folder).getUID(message);
+    return storedEmails;
+  }
+
+  /**
+   * Helper method
+   * @see FolderOperations#search(Folder, SearchTerm...)
+   * @see FolderOperations#move(Folder, Message[], Folder)
+   * @see FolderOperations#toStoredList(Message[], boolean)
+   *
+   * @param searchInfolder
+   * @param readContent
+   * @param terms
+   * @param moveToFolder
+   *
+   * @return List<Email>
+   */
+  default List<Email> searchAndMove(Folder searchInfolder, boolean readContent, Folder moveToFolder, SearchTerm... terms) throws MessagingException {
+    Message[] emails = FolderOperations.search(searchInfolder, terms);
+    List<Email> storedEmails = FolderOperations.toStoredList(emails, readContent);
+    if (emails.length > 1) {
+      FolderOperations.move(searchInfolder, emails, moveToFolder);
     }
-    //TODO: maybe this should fail instead.
-    return -1;
+    return storedEmails;
+  }
+
+  /**
+   * Helper method
+   * @see FolderOperations#search(Folder, Date, Date)
+   * @see FolderOperations#move(Folder, Message[], Folder)
+   * @see FolderOperations#toStoredList(Message[], boolean)
+   *
+   * @param searchInfolder
+   * @param readContent
+   * @param moveToFolder
+   * @param newerThan
+   * @param olderThan
+   *
+   * @return List<Email>
+   */
+  default List<Email> searchAndMove(Folder searchInfolder, boolean readContent, Folder moveToFolder, Date olderThan, Date newerThan) throws MessagingException {
+    Message[] emails = FolderOperations.search(searchInfolder, olderThan, newerThan);
+    System.out.println("# messages: " + emails.length);
+    List<Email> storedEmails = FolderOperations.toStoredList(emails, readContent);
+    if (emails.length > 1) {
+      FolderOperations.move(searchInfolder, emails, moveToFolder);
+    }
+    return storedEmails;
+  }
+
+  /**
+   * Helper method
+   * @see FolderOperations#move(Folder, boolean, int, Folder)
+   *
+   * @param fromFolder
+   * @param readContent
+   * @param numToRetrieve
+   * @param toFolder
+   */
+  default void move(Folder fromFolder, boolean readContent, int numToRetrieve, Folder toFolder) throws MessagingException {
+    FolderOperations.move(fromFolder, readContent, numToRetrieve, toFolder);
   }
 }
