@@ -24,6 +24,7 @@
 package desi.juan.email.internal.commands;
 
 import com.google.common.collect.ImmutableList;
+import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.pop3.POP3Folder;
 import desi.juan.email.api.Email;
 import desi.juan.email.internal.StoredEmail;
@@ -84,13 +85,12 @@ public class FolderOperationsInternal {
      *
      * @return List<Email>
      */
-    protected static List<Email> toStoredList(Message[] messages, boolean readContent) {
+    public static List<Email> toStoredList(Message[] messages, boolean readContent) {
         ImmutableList.Builder<Email> emailsBuilder = ImmutableList.builder();
         for (Message message : messages) {
             long uid = getEmailUid(message.getFolder(), message);
             emailsBuilder.add(new StoredEmail(message, uid, readContent));
         }
-        System.out.println("Done storing");
         return emailsBuilder.build();
     }
 
@@ -148,7 +148,7 @@ public class FolderOperationsInternal {
         SearchTerm ot = new ReceivedDateTerm(ComparisonTerm.LT, olderThan);
         SearchTerm nt = new ReceivedDateTerm(ComparisonTerm.GT, newerThan);
 
-        return search(folder, nt);
+        return search(folder, ot, nt);
     }
 
     /**
@@ -162,15 +162,20 @@ public class FolderOperationsInternal {
      *
      * @throws MessagingException
      */
-    protected static void move(Folder fromFolder, Message[] messages, Folder toFolder) throws MessagingException {
+    public static void move(Folder fromFolder, Message[] messages, Folder toFolder) throws MessagingException {
         if (messages.length < 1) {
             throw new MessagingException("No messages to move");
         }
         //try {
-            fromFolder.copyMessages(messages, toFolder);
-            //TODO: should we wait?
-            //fromFolder.wait(2000);
-            FlagOperations.delete(messages);
+            if (fromFolder instanceof IMAPFolder) {
+                IMAPFolder imapFolder = (IMAPFolder)fromFolder;
+                imapFolder.moveMessages(messages, toFolder);
+            } else {
+                fromFolder.copyMessages(messages, toFolder);
+                //TODO: should we wait?
+                //fromFolder.wait(2000);
+                FlagOperations.delete(messages);
+            }
        // } catch (InterruptedException e) {
           //  e.printStackTrace();
        // }

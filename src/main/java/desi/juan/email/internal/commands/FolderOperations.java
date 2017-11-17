@@ -190,7 +190,6 @@ public interface FolderOperations {
    */
   default List<Email> searchAndMove(Folder searchInfolder, boolean readContent, Folder moveToFolder, Date olderThan, Date newerThan) throws MessagingException {
     Message[] emails = FolderOperationsInternal.search(searchInfolder, olderThan, newerThan);
-    System.out.println("# messages: " + emails.length);
     List<Email> storedEmails = FolderOperationsInternal.toStoredList(emails, readContent);
     if (emails.length > 1) {
       FolderOperationsInternal.move(searchInfolder, emails, moveToFolder);

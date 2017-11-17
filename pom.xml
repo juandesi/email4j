@@ -6,7 +6,7 @@
 
     <groupId>desi.juan</groupId>
     <artifactId>email4j</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2</version>
 	<packaging>jar</packaging>
 
     <properties>
