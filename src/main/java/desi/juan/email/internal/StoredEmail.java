@@ -34,6 +34,7 @@ import static javax.mail.Message.RecipientType.TO;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 
+import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -49,6 +50,7 @@ import javax.mail.Folder;
 import javax.mail.Header;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.LinkedListMultimap;
@@ -171,7 +173,12 @@ public class StoredEmail implements Email {
 
       if (readContent) {
         EmailContentProcessor processor = EmailContentProcessor.getInstance(message);
-        this.body = new EmailBody(processor.getBody(), Charsets.UTF_8, TEXT);
+        Charset cs = Charsets.UTF_8;
+        if (message instanceof MimeMessage) {
+          MimeMessage mm = (MimeMessage)message;
+          cs = Charset.forName(mm.getEncoding());
+        }
+        this.body = new EmailBody(processor.getBody(), cs, message.getContentType());
         this.attachments = processor.getAttachments();
       } else {
         this.body = new EmailBody();
