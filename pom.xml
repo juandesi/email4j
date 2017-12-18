@@ -7,10 +7,10 @@
     <groupId>desi.juan</groupId>
     <artifactId>email4j</artifactId>
     <version>1.2</version>
-	<packaging>jar</packaging>
+    <packaging>jar</packaging>
 
     <properties>
-        <javaMailVersion>1.5.6</javaMailVersion>
+        <javaMailVersion>1.6.0</javaMailVersion>
         <guavaVersion>18.0</guavaVersion>
         <commonsLangVersion>2.6</commonsLangVersion>
         <commonsIoVersion>2.4</commonsIoVersion>

@@ -69,7 +69,7 @@ public class ImapClientTestCase extends Email4JTestCase {
       assertThat(e, is(instanceOf(StoredEmail.class)));
       assertBodyContent(e);
       assertSubject(e);
-      assertThat(e.getHeaders().size(), is(6));
+      assertThat(e.getHeaders().size(), is(7));
     });
   }
 
