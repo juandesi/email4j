@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,43 +25,24 @@
  */
 package desi.juan.email.internal;
 
-import static desi.juan.email.api.EmailConstants.TEXT;
-import static java.util.Arrays.stream;
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
-import static javax.mail.Message.RecipientType.BCC;
-import static javax.mail.Message.RecipientType.CC;
-import static javax.mail.Message.RecipientType.TO;
-
-import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableMap;
-
-import java.nio.charset.Charset;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.mail.Address;
-import javax.mail.Flags;
-import javax.mail.Flags.Flag;
-import javax.mail.Folder;
-import javax.mail.Header;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import desi.juan.email.api.Email;
 import desi.juan.email.api.EmailAttachment;
 import desi.juan.email.api.EmailBody;
 import desi.juan.email.api.EmailFlags;
 import desi.juan.email.internal.exception.RetrieveEmailException;
+
+import javax.mail.*;
+import javax.mail.Flags.Flag;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
+
+import static java.util.Arrays.stream;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+import static javax.mail.Message.RecipientType.*;
 
 /**
  * Contains all the metadata of an email, it carries information such as the subject of the email, the id in the mailbox and the
@@ -152,7 +135,7 @@ public class StoredEmail implements Email {
 
   /**
    * Creates a new instance.
-   *
+   * <p>
    * If the {@code readContent} parameter is true then the email is going to be opened
    * and flagged as SEEN, otherwise the body and attachments are not going to be obtained.
    */
@@ -173,14 +156,10 @@ public class StoredEmail implements Email {
 
       if (readContent) {
         EmailContentProcessor processor = EmailContentProcessor.getInstance(message);
-        Charset cs = Charsets.UTF_8;
-        if (message instanceof MimeMessage) {
-          MimeMessage mm = (MimeMessage)message;
-          cs = Charset.forName(mm.getEncoding());
-        }
-        this.body = new EmailBody(processor.getBody(), cs, message.getContentType());
+        this.body = new EmailBody(processor.getBody(), message.getContentType());
         this.attachments = processor.getAttachments();
       } else {
+        // TODO: should null be used instead of empty EmailBody?
         this.body = new EmailBody();
         this.attachments = emptyList();
       }
@@ -330,10 +309,10 @@ public class StoredEmail implements Email {
    */
   private EmailFlags parseFlags(Flags flags) {
     return new EmailFlags(flags.contains(Flag.ANSWERED),
-                          flags.contains(Flag.DELETED),
-                          flags.contains(Flag.DRAFT),
-                          flags.contains(Flag.RECENT),
-                          flags.contains(Flag.SEEN));
+        flags.contains(Flag.DELETED),
+        flags.contains(Flag.DRAFT),
+        flags.contains(Flag.RECENT),
+        flags.contains(Flag.SEEN));
   }
 
   /**

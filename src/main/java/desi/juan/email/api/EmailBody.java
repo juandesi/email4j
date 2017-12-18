@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +25,12 @@
  */
 package desi.juan.email.api;
 
-import com.google.common.base.Charsets;
-
+import javax.mail.internet.ContentType;
+import javax.mail.internet.MimeUtility;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
+import static desi.juan.email.api.EmailConstants.DEFAULT_CHARSET;
 import static desi.juan.email.api.EmailConstants.DEFAULT_CONTENT_TYPE;
 import static java.lang.String.format;
 
@@ -37,44 +41,133 @@ import static java.lang.String.format;
 public class EmailBody {
 
   /**
+   * Text body of the message content.
+   */
+  private final String content;
+
+  /**
    * @return the body content of the email as a {@link String} value.
    */
+
   public String getContent() {
-    return body;
+    return content;
   }
 
   /**
-   * @return the content type of the body, one of text/plain or text/html
+   * Format of the body text. Example: "text/html" or "text/plain".
    */
-  public String getContentType() {
-    return format("%s; charset=%s", contentType, charset);
+  private final String format;
+
+  /**
+   * @return format of the body text. Example: "text/html" or "text/plain".
+   */
+  public String getFormat() {
+    return format;
   }
 
   /**
-   * Text body of the message content
-   */
-  private final String body;
-
-  /**
-   * ContentType of the body text. Example: "text/html" or "text/plain".
-   */
-  private final String contentType;
-
-  /**
-   * The character encoding of the body.
+   * The charset of the body text
    */
   private final Charset charset;
 
-  public EmailBody() {
-    this("", Charsets.UTF_8, DEFAULT_CONTENT_TYPE);
+  /**
+   * @return the charset of the body text
+   */
+  public Charset getCharset() {
+    return charset;
   }
 
-  public EmailBody(String body, Charset charset, String contentType) {
-    if (body == null || contentType == null || charset == null) {
-      throw new IllegalArgumentException("param cannot be null");
+  /**
+   * @return the content type of the body, includes email format and charset
+   */
+  public String getContentType() {
+    return format("%s; charset=%s", format, charset);
+  }
+
+  /**
+   * EmailBody constructor
+   *
+   * @param content
+   * @param charset
+   * @param emailFormat
+   */
+  public EmailBody(String content, Charset charset, String emailFormat) {
+    if (content == null || charset == null || emailFormat == null) {
+      throw new IllegalArgumentException("No param can be null");
     }
-    this.body = body;
-    this.contentType = contentType;
+    this.content = content;
     this.charset = charset;
+    this.format = emailFormat.toLowerCase();
+  }
+
+  /**
+   * Body with DEFAULT_CONTENT_TYPE.
+   *
+   * @see #EmailBody(String, String)
+   */
+  public EmailBody(String content) {
+    this(content, DEFAULT_CONTENT_TYPE);
+  }
+
+  /**
+   * Empty body with DEFAULT_CONTENT_TYPE.
+   *
+   * @see #EmailBody(String)
+   */
+  public EmailBody() {
+    this("");
+  }
+
+  /**
+   * @param content
+   * @param contentType
+   * @see #EmailBody(String, ContentType)
+   */
+  public EmailBody(String content, String contentType) {
+    this(content, toContentType(contentType));
+  }
+
+  /**
+   * @param content
+   * @param contentType
+   * @see #EmailBody(String, Charset, String)
+   */
+  protected EmailBody(String content, ContentType contentType) {
+    this(content, getCharset(contentType), getFormat(contentType));
+  }
+
+  /**
+   * @param contentType
+   * @return
+   */
+  private static Charset getCharset(ContentType contentType) {
+    String csParam = contentType.getParameter("charset");
+    try {
+      String csStr = MimeUtility.decodeText(csParam);
+      return Charset.forName(csStr);
+    } catch (UnsupportedEncodingException e) {
+      return DEFAULT_CHARSET;
+    }
+  }
+
+  /**
+   * @param contentType
+   * @return
+   */
+  private static ContentType toContentType(String contentType) {
+    try {
+      return new ContentType(contentType);
+    } catch (Exception e) {
+      // TODO: should this do something else?
+      return new ContentType();
+    }
+  }
+
+  /**
+   * @param contentType
+   * @return
+   */
+  private static String getFormat(ContentType contentType) {
+    return contentType.getBaseType();
   }
 }

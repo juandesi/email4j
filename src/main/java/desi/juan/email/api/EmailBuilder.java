@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,22 +25,21 @@
  */
 package desi.juan.email.api;
 
-import static desi.juan.email.api.EmailConstants.TEXT_PLAIN;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import desi.juan.email.internal.OutgoingEmail;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import desi.juan.email.internal.OutgoingEmail;
+import static desi.juan.email.api.EmailConstants.NO_SUBJECT;
 
 /**
  * Implementation of the builder design pattern to create a new {@link Email} instance.
  */
 public final class EmailBuilder {
 
-  private String subject = "[No Subject]";
+  private String subject = NO_SUBJECT;
   private List<String> from = new ArrayList<>();
   private List<String> to = new ArrayList<>();
   private List<String> bcc = new ArrayList<>();
@@ -51,7 +52,8 @@ public final class EmailBuilder {
   /**
    * Hide constructor.
    */
-  private EmailBuilder() {}
+  private EmailBuilder() {
+  }
 
   /**
    * @return an instance of this {@link EmailBuilder}.
@@ -157,8 +159,8 @@ public final class EmailBuilder {
   public EmailBuilder withHeaders(Multimap<String, String> headers) {
     this.headers.putAll(headers);
     return this;
-  }  
-  
+  }
+
   /**
    * sets an additional header of the email that is being built.
    *
@@ -185,7 +187,7 @@ public final class EmailBuilder {
   /**
    * sets the specified body to the email that is being built.
    */
-  public EmailBuilder withBody(EmailBody body){
+  public EmailBuilder withBody(EmailBody body) {
     this.body = body;
     return this;
   }
@@ -193,15 +195,15 @@ public final class EmailBuilder {
   /**
    * sets a plain text body to the email that is being built.
    */
-  public EmailBuilder withBody(String body){
-    this.body = new EmailBody(body, Charsets.UTF_8, TEXT_PLAIN);
+  public EmailBuilder withBody(String body) {
+    this.body = new EmailBody(body);
     return this;
   }
 
   /**
    * sets a list of attachments to bound in the email that is being built.
    */
-  public EmailBuilder withAttachments(List<EmailAttachment> attachments){
+  public EmailBuilder withAttachments(List<EmailAttachment> attachments) {
     this.attachments.addAll(attachments);
     return this;
   }
@@ -209,7 +211,7 @@ public final class EmailBuilder {
   /**
    * adds an attachment to the email that is being built.
    */
-  public EmailBuilder withAttachment(EmailAttachment attachment){
+  public EmailBuilder withAttachment(EmailAttachment attachment) {
     this.attachments.add(attachment);
     return this;
   }
@@ -223,17 +225,14 @@ public final class EmailBuilder {
       throw new IllegalStateException("Cannot build an Email message with no body");
     }
 
-    if (to.isEmpty())
-    {
+    if (to.isEmpty()) {
       throw new IllegalStateException("Cannot build an Email message with no TO address(es)");
     }
 
-    if (from.isEmpty())
-    {
+    if (from.isEmpty()) {
       throw new IllegalStateException("Cannot build an Email message with no from address");
     }
 
     return new OutgoingEmail(subject, from, to, bcc, cc, replyTo, body, attachments, headers);
   }
 }
-
