@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +25,12 @@
  */
 package desi.juan.email.api.client.configuration;
 
+import com.google.common.collect.ImmutableMap;
+import desi.juan.email.api.security.TlsConfiguration;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-
-import com.google.common.collect.ImmutableMap;
-import desi.juan.email.api.security.TlsConfiguration;
 
 /**
  * This class represents a configuration with advanced which enables the use of TLS for encrypted
@@ -45,6 +47,7 @@ public class ClientConfiguration {
 
   /**
    * Default timeouts are 10 seconds
+   *
    * @return
    */
   public ClientConfiguration() {
@@ -52,10 +55,10 @@ public class ClientConfiguration {
   }
 
   public ClientConfiguration(long connectionTimeout,
-                      Map<String, String> properties,
-                      long readTimeout,
-                      TlsConfiguration tlsConfig,
-                      long writeTimeout) {
+                             Map<String, String> properties,
+                             long readTimeout,
+                             TlsConfiguration tlsConfig,
+                             long writeTimeout) {
     this.connectionTimeout = connectionTimeout;
     this.properties = ImmutableMap.copyOf(properties);
     this.readTimeout = readTimeout;

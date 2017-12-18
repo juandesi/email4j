@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +26,18 @@
 package desi.juan.email.api.client;
 
 
-import static desi.juan.email.internal.EmailProtocol.IMAP;
-import static desi.juan.email.internal.EmailProtocol.IMAPS;
-import static java.lang.String.format;
-
-import javax.mail.Folder;
-import javax.mail.UIDFolder;
-
 import desi.juan.email.api.client.configuration.ClientConfiguration;
 import desi.juan.email.internal.commands.DeleteOperations;
 import desi.juan.email.internal.commands.FolderOperations;
 import desi.juan.email.internal.connection.MailboxManagerConnection;
 import desi.juan.email.internal.exception.EmailException;
+
+import javax.mail.Folder;
+import javax.mail.UIDFolder;
+
+import static desi.juan.email.internal.EmailProtocol.IMAP;
+import static desi.juan.email.internal.EmailProtocol.IMAPS;
+import static java.lang.String.format;
 
 /**
  * Encapsulates all the functionality necessary to manage IMAP mailboxes.
@@ -57,17 +59,16 @@ public class ImapClient extends MailboxManagerConnection implements DeleteOperat
                     String password,
                     String host,
                     int port,
-                    ClientConfiguration config)
-  {
+                    ClientConfiguration config) {
     super(config.getTlsConfig().isPresent() ? IMAPS : IMAP,
-            username,
-            password,
-            host,
-            port,
-            config.getConnectionTimeout(),
-            config.getReadTimeout(),
-            config.getWriteTimeout(),
-            config.getProperties());
+        username,
+        password,
+        host,
+        port,
+        config.getConnectionTimeout(),
+        config.getReadTimeout(),
+        config.getWriteTimeout(),
+        config.getProperties());
   }
 
   public UIDFolder getUIDFolder(String folder, int openMode) {

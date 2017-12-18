@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,20 +26,19 @@
 package desi.juan.email.api.client;
 
 
-import static desi.juan.email.internal.EmailProtocol.POP3;
-import static desi.juan.email.internal.EmailProtocol.POP3S;
-import static javax.mail.Folder.READ_ONLY;
-
-import java.util.List;
-
-import javax.mail.Folder;
-import javax.mail.MessagingException;
-
 import desi.juan.email.api.Email;
 import desi.juan.email.api.client.configuration.ClientConfiguration;
 import desi.juan.email.internal.commands.DeleteOperations;
 import desi.juan.email.internal.commands.FolderOperations;
 import desi.juan.email.internal.connection.MailboxManagerConnection;
+
+import javax.mail.Folder;
+import javax.mail.MessagingException;
+import java.util.List;
+
+import static desi.juan.email.internal.EmailProtocol.POP3;
+import static desi.juan.email.internal.EmailProtocol.POP3S;
+import static javax.mail.Folder.READ_ONLY;
 
 /**
  * Encapsulates all the functionality necessary to manage POP3 mailboxes.
@@ -59,17 +60,16 @@ public class Pop3Client extends MailboxManagerConnection implements DeleteOperat
                     String password,
                     String host,
                     int port,
-                    ClientConfiguration config)
-  {
+                    ClientConfiguration config) {
     super(config.getTlsConfig().isPresent() ? POP3S : POP3,
-            username,
-            password,
-            host,
-            port,
-            config.getConnectionTimeout(),
-            config.getReadTimeout(),
-            config.getWriteTimeout(),
-            config.getProperties());
+        username,
+        password,
+        host,
+        port,
+        config.getConnectionTimeout(),
+        config.getReadTimeout(),
+        config.getWriteTimeout(),
+        config.getProperties());
   }
 
   public List<Email> retrieve(String folder, boolean isDeleteAfterRetrieve, int numToRetrieve) {
@@ -81,6 +81,7 @@ public class Pop3Client extends MailboxManagerConnection implements DeleteOperat
         try {
           deleteByNumber(readOnlyFolder, e.getNumber());
         } catch (MessagingException e1) {
+
           e1.printStackTrace();
           //TODO: this needs to be better logged
         }

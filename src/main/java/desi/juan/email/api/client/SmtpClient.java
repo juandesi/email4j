@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +26,13 @@
 package desi.juan.email.api.client;
 
 
-import static desi.juan.email.internal.EmailProtocol.SMTP;
-import static desi.juan.email.internal.EmailProtocol.SMTPS;
-
-
 import desi.juan.email.api.Email;
 import desi.juan.email.api.client.configuration.ClientConfiguration;
 import desi.juan.email.internal.commands.SendOperations;
 import desi.juan.email.internal.connection.SenderConnection;
+
+import static desi.juan.email.internal.EmailProtocol.SMTP;
+import static desi.juan.email.internal.EmailProtocol.SMTPS;
 
 /**
  * Encapsulates all the functionality necessary to send emails through an SMTP server.
@@ -55,17 +56,16 @@ public class SmtpClient extends SenderConnection implements SendOperations {
                     String password,
                     String host,
                     int port,
-                    ClientConfiguration config)
-  {
+                    ClientConfiguration config) {
     super(config.getTlsConfig().isPresent() ? SMTPS : SMTP,
-            username,
-            password,
-            host,
-            port,
-            config.getConnectionTimeout(),
-            config.getReadTimeout(),
-            config.getWriteTimeout(),
-            config.getProperties());
+        username,
+        password,
+        host,
+        port,
+        config.getConnectionTimeout(),
+        config.getReadTimeout(),
+        config.getWriteTimeout(),
+        config.getProperties());
   }
 
   public void send(Email email) {

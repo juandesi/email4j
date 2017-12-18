@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,16 +25,7 @@
  */
 package desi.juan.email;
 
-import static desi.juan.email.api.EmailConstants.TEXT;
-import static java.lang.Thread.currentThread;
-import static javax.mail.Message.RecipientType.TO;
-import static javax.mail.Part.ATTACHMENT;
-
 import com.icegreen.greenmail.util.ServerSetup;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.Properties;
 
 import javax.activation.DataHandler;
 import javax.mail.Message;
@@ -43,6 +36,13 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.net.URL;
+import java.util.Properties;
+
+import static desi.juan.email.api.EmailConstants.TEXT;
+import static java.lang.Thread.currentThread;
+import static javax.mail.Message.RecipientType.TO;
+import static javax.mail.Part.ATTACHMENT;
 
 public class EmailTestUtils {
 
@@ -93,7 +93,7 @@ public class EmailTestUtils {
     return message;
   }
 
-  public static Message getSinglePartTestMessage() throws IOException, MessagingException {
+  public static Message getSinglePartTestMessage() throws MessagingException {
     Message message = new MimeMessage(testSession);
     message.setText(EMAIL_CONTENT);
     message.setSubject(EMAIL_SUBJECT);

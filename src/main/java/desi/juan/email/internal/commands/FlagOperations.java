@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,25 +25,22 @@
  */
 package desi.juan.email.internal.commands;
 
-import static desi.juan.email.api.EmailFlags.EmailFlag.DELETED;
-import static java.lang.String.format;
-import static javax.mail.Flags.Flag;
-import static javax.mail.Folder.READ_WRITE;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import desi.juan.email.api.EmailFlags;
+import desi.juan.email.api.EmailFlags.EmailFlag;
+import desi.juan.email.internal.exception.RetrieveEmailException;
 
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.UIDFolder;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.google.common.collect.Maps;
-import desi.juan.email.api.Email;
-import desi.juan.email.api.EmailFlags;
-import desi.juan.email.api.EmailFlags.EmailFlag;
-import desi.juan.email.internal.exception.RetrieveEmailException;
+import static desi.juan.email.api.EmailFlags.EmailFlag.DELETED;
+import static java.lang.String.format;
+import static javax.mail.Flags.Flag;
+import static javax.mail.Folder.READ_WRITE;
 
 /**
  * Represents an operation that marks an email with one of the {@link EmailFlags}. This operation can only be used on IMAP Mailboxes.
@@ -72,6 +71,7 @@ public interface FlagOperations {
 
   /**
    * Mark an email with a flag
+   *
    * @param messages
    * @param flag
    */
@@ -83,6 +83,7 @@ public interface FlagOperations {
 
   /**
    * Deletes a message and expunges folder.
+   *
    * @param message
    */
   static void delete(Message message) {
@@ -92,6 +93,7 @@ public interface FlagOperations {
 
   /**
    * Deletes a message and expunges folder of first message.
+   *
    * @param messages
    */
   static void delete(Message[] messages) {
@@ -102,6 +104,7 @@ public interface FlagOperations {
 
   /**
    * Calls expunge on folder.
+   *
    * @param folder
    */
   static void expungeFolder(Folder folder) {
@@ -114,11 +117,13 @@ public interface FlagOperations {
 
   /**
    * Verify that folder mode matches
+   *
    * @param folder
    * @param openMode mode to check against folder
    */
   static void verifyFolderMode(Folder folder, int openMode) {
-    if (folder.getMode() != openMode) throw new IllegalStateException(format("Folder mode must be in mode:[%s]", openMode));
+    if (folder.getMode() != openMode)
+      throw new IllegalStateException(format("Folder mode must be in mode:[%s]", openMode));
   }
 
   enum FlagMap {

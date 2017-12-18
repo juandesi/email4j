@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,36 +26,28 @@
 package desi.juan.email.internal.commands;
 
 
-import static desi.juan.email.api.EmailConstants.MULTIPART;
-import static java.lang.String.format;
-import static javax.mail.Message.RecipientType.BCC;
-import static javax.mail.Message.RecipientType.CC;
-import static javax.mail.Message.RecipientType.TO;
-import static javax.mail.Part.ATTACHMENT;
-import static javax.mail.Part.INLINE;
-
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-
-import javax.activation.DataHandler;
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-
-import com.google.common.collect.Multimap;
 import desi.juan.email.api.Email;
 import desi.juan.email.api.EmailAttachment;
 import desi.juan.email.api.EmailBody;
 import desi.juan.email.internal.connection.SenderConnection;
 import desi.juan.email.internal.exception.EmailException;
 import desi.juan.email.internal.exception.SendEmailException;
+
+import javax.activation.DataHandler;
+import javax.mail.Address;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Transport;
+import javax.mail.internet.*;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+
+import static desi.juan.email.api.EmailConstants.MULTIPART;
+import static java.lang.String.format;
+import static javax.mail.Message.RecipientType.*;
+import static javax.mail.Part.ATTACHMENT;
+import static javax.mail.Part.INLINE;
 
 /**
  * Interface for the send operation.

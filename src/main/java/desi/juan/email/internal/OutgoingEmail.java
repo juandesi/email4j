@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,24 +25,20 @@
  */
 package desi.juan.email.internal;
 
-import static com.google.common.collect.ImmutableList.copyOf;
-import static java.time.LocalDateTime.now;
-
-import com.google.common.collect.ImmutableMap;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.mail.Folder;
-
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import desi.juan.email.api.Email;
 import desi.juan.email.api.EmailAttachment;
 import desi.juan.email.api.EmailBody;
 import desi.juan.email.api.EmailFlags;
+
+import javax.mail.Folder;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static com.google.common.collect.ImmutableList.copyOf;
+import static java.time.LocalDateTime.now;
 
 /**
  * Contains all the metadata of an email, it carries information such as the subject of the email, the id in the mailbox and the

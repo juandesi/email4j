@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,30 +25,19 @@
  */
 package desi.juan.email.internal;
 
-import static desi.juan.email.api.EmailConstants.TEXT;
-import static javax.mail.Part.ATTACHMENT;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-
-import javax.mail.Header;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Part;
-
 import desi.juan.email.api.EmailAttachment;
 import desi.juan.email.internal.exception.EmailException;
 import org.apache.commons.io.IOUtils;
+
+import javax.mail.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
+import static desi.juan.email.api.EmailConstants.TEXT;
+import static javax.mail.Part.ATTACHMENT;
 
 /**
  * Given a {@link Message} introspects it's content to obtain the body an the attachments if any.

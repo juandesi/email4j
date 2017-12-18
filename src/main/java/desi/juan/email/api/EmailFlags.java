@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -93,7 +95,7 @@ public class EmailFlags {
 
   /**
    * @return if this message is isRecent. Folder implementations set this flag to indicate that this message is new to this
-   *         folder, that is, it has arrived since the last time this folder was opened.
+   * folder, that is, it has arrived since the last time this folder was opened.
    */
   public boolean isRecent() {
     return recent;
@@ -101,7 +103,7 @@ public class EmailFlags {
 
   /**
    * @return if this message has been isSeen. This flag is implicitly set by the implementation when the the email content is
-   *         returned to the client in some form.
+   * returned to the client in some form.
    */
   public boolean isSeen() {
     return seen;

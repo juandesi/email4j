@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,17 +25,16 @@
  */
 package desi.juan.email.internal.connection;
 
-import static java.lang.String.format;
-
-import java.util.Map;
+import desi.juan.email.internal.EmailProtocol;
+import desi.juan.email.internal.exception.EmailConnectionException;
+import desi.juan.email.internal.exception.EmailException;
 
 import javax.mail.Folder;
 import javax.mail.MessagingException;
 import javax.mail.Store;
+import java.util.Map;
 
-import desi.juan.email.internal.EmailProtocol;
-import desi.juan.email.internal.exception.EmailConnectionException;
-import desi.juan.email.internal.exception.EmailException;
+import static java.lang.String.format;
 
 /**
  * A connection with a mail server for retrieving emails from an specific folder.
@@ -64,8 +65,7 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
                                   long connectionTimeout,
                                   long readTimeout,
                                   long writeTimeout,
-                                  Map<String, String> properties)
-  {
+                                  Map<String, String> properties) {
     super(protocol, username, password, host, port, connectionTimeout, readTimeout, writeTimeout, properties);
     try {
       this.store = session.getStore(protocol.getName());
@@ -108,7 +108,7 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
   }
 
   /**
-   * Retrieves the folder. Unlike {@see #getFolder(String, int} this does not open the folder nor close any previously opened folder.
+   * Retrieves the folder. Unlike {@see #getFolder(String, int } this does not open the folder nor close any previously opened folder.
    *
    * @param mailBoxFolder
    */

@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +25,14 @@
  */
 package desi.juan.email.internal.connection;
 
-import java.util.Map;
-import java.util.Properties;
+import desi.juan.email.internal.EmailProtocol;
+import desi.juan.email.internal.exception.EmailConnectionException;
 
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
-
-import desi.juan.email.internal.EmailProtocol;
-import desi.juan.email.internal.exception.EmailConnectionException;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Generic implementation for an email connection of a connector which operates over the SMTP, IMAP, POP3 and its secure versions
@@ -51,15 +52,14 @@ public abstract class AbstractConnection {
    * Default Constructor
    */
   AbstractConnection(EmailProtocol protocol,
-                            String username,
-                            String password,
-                            String host,
-                            int port,
-                            long connectionTimeout,
-                            long readTimeout,
-                            long writeTimeout,
-                            Map<String, String> properties) throws EmailConnectionException
-  {
+                     String username,
+                     String password,
+                     String host,
+                     int port,
+                     long connectionTimeout,
+                     long readTimeout,
+                     long writeTimeout,
+                     Map<String, String> properties) throws EmailConnectionException {
     this.protocol = protocol;
     Properties sessionProperties = buildBasicSessionProperties(host, port, connectionTimeout, readTimeout, writeTimeout);
 
@@ -84,8 +84,7 @@ public abstract class AbstractConnection {
                                                  int port,
                                                  long connectionTimeout,
                                                  long readTimeout,
-                                                 long writeTimeout) throws EmailConnectionException
-  {
+                                                 long writeTimeout) throws EmailConnectionException {
     Properties props = new Properties();
     props.setProperty(protocol.getPortProperty(), Integer.toString(port));
     props.setProperty(protocol.getHostProperty(), host);

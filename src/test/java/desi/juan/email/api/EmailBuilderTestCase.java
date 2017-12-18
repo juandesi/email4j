@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +25,20 @@
  */
 package desi.juan.email.api;
 
-import static desi.juan.email.EmailTestUtils.EMAIL_CONTENT;
-import static desi.juan.email.EmailTestUtils.EMAIL_SUBJECT;
-import static desi.juan.email.EmailTestUtils.GOHAN_EMAIL;
-import static desi.juan.email.EmailTestUtils.GOKU_EMAIL;
-import static desi.juan.email.EmailTestUtils.HEADER_KEY;
-import static desi.juan.email.EmailTestUtils.HEADER_VAL;
-import static desi.juan.email.EmailTestUtils.ROSHI_EMAIL;
-import static desi.juan.email.EmailTestUtils.TRUNKS_EMAIL;
-import static desi.juan.email.EmailTestUtils.VEGETA_EMAIL;
-import static desi.juan.email.api.EmailBuilder.newEmail;
-import static desi.juan.email.api.EmailConstants.DEFAULT_CONTENT_TYPE;
-import static desi.juan.email.api.EmailConstants.TEXT_HTML;
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 import com.google.common.base.Charsets;
 import desi.juan.email.internal.OutgoingEmail;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static desi.juan.email.EmailTestUtils.*;
+import static desi.juan.email.api.EmailBuilder.newEmail;
+import static desi.juan.email.api.EmailConstants.*;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 public class EmailBuilderTestCase {
 
@@ -60,17 +51,17 @@ public class EmailBuilderTestCase {
   @Test
   public void completeEmail() {
     Email email = newEmail()
-      .withAttachment(attachment1)
-      .withAttachment(attachment2)
-      .withSubject(EMAIL_SUBJECT)
-      .bcc(asList(GOHAN_EMAIL, VEGETA_EMAIL))
-      .cc(TRUNKS_EMAIL)
-      .to(GOKU_EMAIL)
-      .from(ROSHI_EMAIL)
-      .withBody(EMAIL_CONTENT)
-      .withHeader(HEADER_KEY, HEADER_VAL)
-      .build();
-
+        .withAttachment(attachment1)
+        .withAttachment(attachment2)
+        .withSubject(EMAIL_SUBJECT)
+        .bcc(asList(GOHAN_EMAIL, VEGETA_EMAIL))
+        .cc(TRUNKS_EMAIL)
+        .to(GOKU_EMAIL)
+        .from(ROSHI_EMAIL)
+        .withBody(EMAIL_CONTENT)
+        .withHeader(HEADER_KEY, HEADER_VAL)
+        .build();
+    
     assertThat(email, is(instanceOf(OutgoingEmail.class)));
     assertThat(email.getBccAddresses(), hasItems(GOHAN_EMAIL, VEGETA_EMAIL));
     assertThat(email.getCcAddresses(), hasItems(TRUNKS_EMAIL));
@@ -88,16 +79,16 @@ public class EmailBuilderTestCase {
   public void onlyBodyEmail() {
     String html = "<h1>Html Text</h1>";
     Email email = newEmail()
-      .to(singletonList(GOKU_EMAIL))
-      .from(ROSHI_EMAIL)
-      .withBody(new EmailBody(html, Charsets.UTF_8, TEXT_HTML))
-      .build();
+        .to(singletonList(GOKU_EMAIL))
+        .from(ROSHI_EMAIL)
+        .withBody(new EmailBody(html, Charsets.UTF_8, TEXT_HTML))
+        .build();
 
     assertThat(email.getHeaders().size(), is(0));
     assertThat(email.getBccAddresses().size(), is(0));
     assertThat(email.getCcAddresses().size(), is(0));
     assertThat(email.getBody().getContent(), is(html));
-    assertThat(email.getSubject(), is("[No Subject]"));
+    assertThat(email.getSubject(), is(NO_SUBJECT));
   }
 
   @Test
@@ -105,10 +96,10 @@ public class EmailBuilderTestCase {
     ee.expect(IllegalStateException.class);
     ee.expectMessage(containsString("with no body"));
     newEmail()
-      .withAttachment(attachment2)
-      .withSubject(EMAIL_SUBJECT)
-      .withHeader(HEADER_KEY, HEADER_VAL)
-      .build();
+        .withAttachment(attachment2)
+        .withSubject(EMAIL_SUBJECT)
+        .withHeader(HEADER_KEY, HEADER_VAL)
+        .build();
   }
 
   @Test
@@ -116,11 +107,11 @@ public class EmailBuilderTestCase {
     ee.expect(IllegalStateException.class);
     ee.expectMessage(containsString("with no TO address(es)"));
     newEmail()
-      .withAttachment(attachment2)
-      .withSubject(EMAIL_SUBJECT)
-      .withBody("")
-      .withHeader(HEADER_KEY, HEADER_VAL)
-      .build();
+        .withAttachment(attachment2)
+        .withSubject(EMAIL_SUBJECT)
+        .withBody("")
+        .withHeader(HEADER_KEY, HEADER_VAL)
+        .build();
   }
 
   @Test
@@ -128,11 +119,11 @@ public class EmailBuilderTestCase {
     ee.expect(IllegalStateException.class);
     ee.expectMessage(containsString("with no from address"));
     newEmail()
-      .withAttachment(attachment2)
-      .withSubject(EMAIL_SUBJECT)
-      .withBody("")
-      .to(singletonList(ROSHI_EMAIL))
-      .withHeader(HEADER_KEY, HEADER_VAL)
-      .build();
+        .withAttachment(attachment2)
+        .withSubject(EMAIL_SUBJECT)
+        .withBody("")
+        .to(singletonList(ROSHI_EMAIL))
+        .withHeader(HEADER_KEY, HEADER_VAL)
+        .build();
   }
 }

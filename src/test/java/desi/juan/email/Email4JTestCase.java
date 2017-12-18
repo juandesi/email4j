@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,25 +25,19 @@
  */
 package desi.juan.email;
 
-import static desi.juan.email.EmailTestUtils.EMAIL_CONTENT;
-import static desi.juan.email.EmailTestUtils.EMAIL_SUBJECT;
-import static desi.juan.email.EmailTestUtils.GOKU_EMAIL;
-import static desi.juan.email.EmailTestUtils.setUpServer;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.CoreMatchers.startsWith;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 import com.icegreen.greenmail.user.GreenMailUser;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
-
 import desi.juan.email.api.Email;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
+
+import static desi.juan.email.EmailTestUtils.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 public abstract class Email4JTestCase {
 
@@ -64,7 +60,7 @@ public abstract class Email4JTestCase {
   }
 
   @After
-  public void dispose() throws Exception {
+  public void dispose() {
     assertThat(server, is(not(nullValue())));
     server.stop();
   }

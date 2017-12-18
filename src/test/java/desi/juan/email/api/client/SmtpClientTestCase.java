@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +25,20 @@
  */
 package desi.juan.email.api.client;
 
-import static desi.juan.email.EmailTestUtils.EMAIL_CONTENT;
-import static desi.juan.email.EmailTestUtils.EMAIL_SUBJECT;
-import static desi.juan.email.EmailTestUtils.GOHAN_EMAIL;
-import static desi.juan.email.EmailTestUtils.GOKU_EMAIL;
-import static desi.juan.email.EmailTestUtils.HEADER_KEY;
-import static desi.juan.email.EmailTestUtils.HEADER_VAL;
-import static desi.juan.email.EmailTestUtils.TRUNKS_EMAIL;
-import static desi.juan.email.EmailTestUtils.VEGETA_EMAIL;
+import desi.juan.email.Email4JTestCase;
+import desi.juan.email.api.Email;
+import desi.juan.email.api.client.configuration.ClientConfiguration;
+import desi.juan.email.internal.EmailProtocol;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.mail.Address;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.util.List;
+
+import static desi.juan.email.EmailTestUtils.*;
 import static desi.juan.email.api.EmailBuilder.newEmail;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
@@ -39,23 +47,7 @@ import static javax.mail.Message.RecipientType.CC;
 import static javax.mail.Message.RecipientType.TO;
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.mail.Address;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
-import desi.juan.email.Email4JTestCase;
-import desi.juan.email.api.Email;
-import desi.juan.email.api.client.configuration.ClientConfiguration;
-import desi.juan.email.internal.EmailProtocol;
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.Matchers.*;
 
 public class SmtpClientTestCase extends Email4JTestCase {
 
@@ -81,7 +73,7 @@ public class SmtpClientTestCase extends Email4JTestCase {
   }
 
   @Test
-  public void sendBatch() throws IOException, MessagingException {
+  public void sendBatch() {
     Email email = buildSimpleEmail();
     for (int i = 0; i < 100; i++) {
       client.send(email);
@@ -106,14 +98,14 @@ public class SmtpClientTestCase extends Email4JTestCase {
 
   private Email buildSimpleEmail() {
     return newEmail()
-      .to(GOHAN_EMAIL)
-      .cc(VEGETA_EMAIL)
-      .cc(TRUNKS_EMAIL)
-      .withBody(EMAIL_CONTENT)
-      .withSubject(EMAIL_SUBJECT)
-      .withHeader(HEADER_KEY, HEADER_VAL)
-      .from(GOKU_EMAIL)
-      .build();
+        .to(GOHAN_EMAIL)
+        .cc(VEGETA_EMAIL)
+        .cc(TRUNKS_EMAIL)
+        .withBody(EMAIL_CONTENT)
+        .withSubject(EMAIL_SUBJECT)
+        .withHeader(HEADER_KEY, HEADER_VAL)
+        .from(GOKU_EMAIL)
+        .build();
   }
 
   private List<MimeMessage> getReceivedMessages() {

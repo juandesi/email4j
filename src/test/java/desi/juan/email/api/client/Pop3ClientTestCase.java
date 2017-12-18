@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,46 +25,43 @@
  */
 package desi.juan.email.api.client;
 
-import static desi.juan.email.EmailTestUtils.GOKU_EMAIL;
-import static desi.juan.email.EmailTestUtils.getSinglePartTestMessage;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
 import desi.juan.email.Email4JTestCase;
 import desi.juan.email.api.Email;
-import static desi.juan.email.api.EmailConstants.INBOX_FOLDER;
 import desi.juan.email.api.client.configuration.ClientConfiguration;
 import desi.juan.email.internal.EmailProtocol;
 import desi.juan.email.internal.StoredEmail;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.util.List;
+
+import static desi.juan.email.EmailTestUtils.GOKU_EMAIL;
+import static desi.juan.email.EmailTestUtils.getSinglePartTestMessage;
+import static desi.juan.email.api.EmailConstants.INBOX_FOLDER;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 public class Pop3ClientTestCase extends Email4JTestCase {
 
   private Pop3Client client;
 
   @Before
-  public void sendInitialEmailBatch() throws MessagingException, IOException {
+  public void sendInitialEmailBatch() throws MessagingException {
     for (int i = 0; i < 10; i++) {
       user.deliver((MimeMessage) getSinglePartTestMessage());
     }
   }
 
   @Before
-  public void createClient()
-  {
+  public void createClient() {
     client = new Pop3Client(GOKU_EMAIL, PASSWORD, HOST, PORT, new ClientConfiguration());
   }
 
   @Test
-  public void receive(){
+  public void receive() {
     List<Email> emails = client.retrieve(INBOX_FOLDER, false);
     assertThat(emails.size(), is(10));
     emails.forEach(e -> {
