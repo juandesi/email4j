@@ -25,71 +25,61 @@
  */
 package desi.juan.email.api;
 
-import java.util.Map;
+import com.google.common.collect.ImmutableList;
 
-import static java.util.Collections.emptyMap;
+import javax.mail.Header;
 
 /**
  * Represents and enables the construction of an email attachment.
  */
-public final class EmailAttachment {
+public final class EmailAttachment extends EmailData {
 
   /**
-   * the name of the attachment.
+   * The name of the attachment.
    */
-  private String id;
-  /**
-   * the content of the attachment.
-   */
-  private Object content;
+  private final String id;
 
   /**
-   * the content type of the attachment content.
-   */
-  private String contentType;
-
-  /**
-   * the headers bounded to the attachment
-   */
-  private final Map<String, String> headers;
-
-  public EmailAttachment(String id, Object content, String contentType) {
-    this(id, content, contentType, emptyMap());
-  }
-
-  public EmailAttachment(String id, Object content, String contentType, Map<String, String> headers) {
-    this.id = id;
-    this.content = content;
-    this.contentType = contentType;
-    this.headers = headers;
-  }
-
-  /**
-   * @return the name of the attachment.
+   * @return The name of the attachment.
    */
   public String getId() {
     return id;
   }
 
   /**
-   * @return the content of the attachment.
+   * The {@link Header}s bounded to the attachment
    */
-  public Object getContent() {
-    return content;
-  }
+  private final ImmutableList<Header> headers;
 
   /**
-   * @return the content type of the attachment content.
+   * @return a set of {@link Header}s that are specific for this attachment. Examples: Content-Type or Content-Disposition.
    */
-  public String getContentType() {
-    return contentType;
-  }
-
-  /**
-   * @return a set of headers that are specific for this attachment.
-   * Such as Content-Type or Content-Disposition.
-   */
-  public Map<String, String> getHeaders() {
+  public ImmutableList<Header> getHeaders() {
     return headers;
+  }
+
+  /**
+   * Creates a new instance. {@link Header}s will be empty.
+   *
+   * @param id
+   * @param content
+   * @param contentType
+   */
+  public EmailAttachment(String id, Object content, String contentType) {
+    this(id, content, contentType, ImmutableList.of());
+  }
+
+  /**
+   * Creates a new instance.
+   *
+   * @param id
+   * @param content
+   * @param contentType
+   * @param headers
+   */
+  public EmailAttachment(String id, Object content, String contentType, ImmutableList<Header> headers) {
+    super(content, contentType);
+    this.headers = headers;
+    this.id = id;
   }
 }
