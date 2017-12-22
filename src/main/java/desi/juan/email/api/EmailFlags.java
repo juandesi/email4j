@@ -25,88 +25,98 @@
  */
 package desi.juan.email.api;
 
+import javax.mail.Folder;
+
 /**
- * The {@link EmailFlags} class represents the set of flags on a Message. Flags are composed of predefined system flags that most
- * folder implementations are expected to support.
+ * This class represents the set of flags on an {@link Email}. Flags are composed of predefined system flags that most
+ * {@link Folder} implementations are expected to support.
  */
 public class EmailFlags {
 
   public enum EmailFlag {
-    SEEN,
-    DRAFT,
     ANSWERED,
+    DELETED,
+    DRAFT,
     RECENT,
-    DELETED
+    SEEN
   }
 
   /**
-   * Specifies if the email message has been answered or not.
+   * Specifies if this {@link Email} has been answered or not.
    */
-  private final boolean answered;
+  private final boolean isAnswered;
 
   /**
-   * Specifies if the email message has been deleted or not.
-   */
-  private final boolean deleted;
-
-  /**
-   * Specifies if the email message is a draft or not.
-   */
-  private final boolean draft;
-
-  /**
-   * Specifies if the email message is recent or not.
-   */
-  private final boolean recent;
-
-  /**
-   * Specifies if the email message has been seen or not.
-   */
-  private final boolean seen;
-
-  public EmailFlags(boolean answered, boolean deleted, boolean draft, boolean recent, boolean seen) {
-    this.answered = answered;
-    this.deleted = deleted;
-    this.draft = draft;
-    this.recent = recent;
-    this.seen = seen;
-  }
-
-  /**
-   * @return if this message has been answered.
+   * @return if this {@link Email} has been answered or not.
    */
   public boolean isAnswered() {
-    return answered;
+    return isAnswered;
   }
 
   /**
-   * @return if this message has been isDeleted.
+   * Specifies if this {@link Email} has been deleted or not.
+   */
+  private final boolean isDeleted;
+
+  /**
+   * @return if this {@link Email} has been deleted or not.
    */
   public boolean isDeleted() {
-    return deleted;
+    return isDeleted;
   }
 
   /**
-   * @return if this message is a isDraft.
+   * Specifies if this {@link Email} is a draft or not.
+   */
+  private final boolean isDraft;
+
+  /**
+   * @return if this {@link Email} is a draft or not.
    */
   public boolean isDraft() {
-    return draft;
+    return isDraft;
   }
 
   /**
-   * @return if this message is isRecent. Folder implementations set this flag to indicate that this message is new to this
-   * folder, that is, it has arrived since the last time this folder was opened.
+   * Specifies if this {@link Email} is isRecent or not.
+   */
+  private final boolean isRecent;
+
+  /**
+   * @return if this {@link Email} is recent. {@link Folder} implementations set this flag to indicate that this {@link Email} is new to this
+   * {@link Folder}, that is, it has arrived since the last time this {@link Folder} was opened.
    */
   public boolean isRecent() {
-    return recent;
+    return isRecent;
   }
 
   /**
-   * @return if this message has been isSeen. This flag is implicitly set by the implementation when the the email content is
+   * Specifies if this {@link Email} has been seen or not.
+   */
+  private final boolean isSeen;
+
+  /**
+   * @return if this {@link Email} has been isSeen. This flag is implicitly set by the implementation when the the {@link Email} content is
    * returned to the client in some form.
    */
   public boolean isSeen() {
-    return seen;
+    return isSeen;
   }
 
+  /**
+   * Creates a new instance.
+   *
+   * @param isAnswered
+   * @param isDeleted
+   * @param isDraft
+   * @param isRecent
+   * @param isSeen
+   */
+  public EmailFlags(boolean isAnswered, boolean isDeleted, boolean isDraft, boolean isRecent, boolean isSeen) {
+    this.isAnswered = isAnswered;
+    this.isDeleted = isDeleted;
+    this.isDraft = isDraft;
+    this.isRecent = isRecent;
+    this.isSeen = isSeen;
+  }
 }

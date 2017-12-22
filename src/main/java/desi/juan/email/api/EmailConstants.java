@@ -34,6 +34,9 @@ import java.nio.charset.Charset;
  */
 public final class EmailConstants {
 
+  /**
+   * No subject.
+   */
   public static final String NO_SUBJECT = "[No Subject]";
 
   /**
@@ -42,22 +45,22 @@ public final class EmailConstants {
   public static final String INBOX_FOLDER = "INBOX";
 
   /**
-   * Defines all the multipart content types
+   * Defines all the multipart content types.
    */
   public static final String MULTIPART = "multipart/*";
 
   /**
-   * Defines all the text content types
+   * Defines all the text content types.
    */
   public static final String TEXT = "text/*";
 
   /**
-   * Plain text body content type
+   * Plain text format.
    */
   public static final String TEXT_PLAIN = "text/plain";
 
   /**
-   * HTML body content type
+   * HTML format.
    */
   public static final String TEXT_HTML = "text/html";
 
@@ -72,9 +75,8 @@ public final class EmailConstants {
   public static final String DEFAULT_CONTENT_TYPE = TEXT_PLAIN + "; charset=" + DEFAULT_CHARSET;
 
   /**
-   * Hide constructor
+   * Hide constructor.
    */
   private EmailConstants() {
   }
-
 }

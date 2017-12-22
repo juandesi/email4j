@@ -31,15 +31,14 @@ import static java.lang.String.format;
 
 /**
  * Represents an Email Protocol.
- * <p>
+ *
  * Each protocol have a set of properties that need to be configured to establish a connection with a mail server.
- * <p>
+ *
  * The full list of properties available for protocols can be found at:
- * <ul>
- * <li>for POP3 <a>https://javamail.java.net/nonav/docs/api/com/sun/mail/pop3/package-summary.html#properties</a></li>
- * <li>for SMTP <a>https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html#properties</a></li>
- * <li>for IMAP <a>https://javamail.java.net/nonav/docs/api/com/sun/mail/imap/package-summary.html#properties</a></li>
- * <ul/>
+ *
+ * @see com.sun.mail.pop3
+ * @see com.sun.mail.imap
+ * @see com.sun.mail.smtp
  */
 public enum EmailProtocol {
 
@@ -79,7 +78,8 @@ public enum EmailProtocol {
   /**
    * Creates an instance.
    *
-   * @param name the name of the protocol.
+   * @param name   the name of the protocol.
+   * @param secure
    */
   EmailProtocol(String name, boolean secure) {
     this.name = name;

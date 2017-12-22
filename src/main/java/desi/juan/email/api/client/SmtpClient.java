@@ -36,9 +36,8 @@ import static desi.juan.email.internal.EmailProtocol.SMTPS;
 
 /**
  * Encapsulates all the functionality necessary to send emails through an SMTP server.
- * <p>
- * This class takes care of all low level details of interacting with an SMTP server and provides a
- * convenient higher level interface
+ *
+ * This class takes care of all low level details of interacting with an SMTP server and provides a convenient higher level interface.
  */
 public class SmtpClient extends SenderConnection implements SendOperations {
 
@@ -52,6 +51,13 @@ public class SmtpClient extends SenderConnection implements SendOperations {
    */
   public static final String DEFAULT_SMTPS_PORT = "587";
 
+  /**
+   * @param username
+   * @param password
+   * @param host
+   * @param port
+   * @param config
+   */
   public SmtpClient(String username,
                     String password,
                     String host,
@@ -68,6 +74,10 @@ public class SmtpClient extends SenderConnection implements SendOperations {
         config.getProperties());
   }
 
+  /**
+   * @param email
+   * @see SendOperations#send(SenderConnection, Email)
+   */
   public void send(Email email) {
     send(this, email);
   }

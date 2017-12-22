@@ -66,22 +66,37 @@ public class ClientConfiguration {
     this.writeTimeout = writeTimeout;
   }
 
+  /**
+   * @return
+   */
   public long getConnectionTimeout() {
     return connectionTimeout;
   }
 
+  /**
+   * @return
+   */
   public Map<String, String> getProperties() {
     return properties;
   }
 
+  /**
+   * @return
+   */
   public long getReadTimeout() {
     return readTimeout;
   }
 
+  /**
+   * @return
+   */
   public Optional<TlsConfiguration> getTlsConfig() {
     return Optional.ofNullable(tlsConfig);
   }
 
+  /**
+   * @return
+   */
   public long getWriteTimeout() {
     return writeTimeout;
   }

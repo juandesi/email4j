@@ -54,7 +54,13 @@ public class ImapClient extends MailboxManagerConnection implements DeleteOperat
    */
   public static final String DEFAULT_IMAPS_PORT = "993";
 
-
+  /**
+   * @param username
+   * @param password
+   * @param host
+   * @param port
+   * @param config
+   */
   public ImapClient(String username,
                     String password,
                     String host,
@@ -71,6 +77,11 @@ public class ImapClient extends MailboxManagerConnection implements DeleteOperat
         config.getProperties());
   }
 
+  /**
+   * @param folder
+   * @param openMode
+   * @return
+   */
   public UIDFolder getUIDFolder(String folder, int openMode) {
     Folder uidFolder = getFolder(folder, openMode);
     if (uidFolder instanceof UIDFolder) {

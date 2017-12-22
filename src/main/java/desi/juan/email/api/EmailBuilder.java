@@ -74,7 +74,7 @@ public final class EmailBuilder {
   }
 
   /**
-   * adds an email from address
+   * Adds an {@link Email} "From" address
    *
    * @param fromAddress the from address to be added.
    * @return this {@link EmailBuilder}
@@ -85,7 +85,7 @@ public final class EmailBuilder {
   }
 
   /**
-   * adds "To" (primary) recipients to the email that is being built.
+   * Adds "To" (primary) recipients to the {@link Email} that is being built.
    *
    * @param toAddresses the "to" addresses to be added.
    * @return this {@link EmailBuilder}
@@ -96,7 +96,7 @@ public final class EmailBuilder {
   }
 
   /**
-   * adds "Bcc" (blind carbon copy) recipients to the email that is being built.
+   * Adds "Bcc" (blind carbon copy) recipients to the {@link Email} that is being built.
    *
    * @param bccAddresses the "bcc" addresses to be added.
    * @return this {@link EmailBuilder}
@@ -107,7 +107,7 @@ public final class EmailBuilder {
   }
 
   /**
-   * adds a "Bcc" (blind carbon copy) recipients to the email that is being built.
+   * adds a "Bcc" (blind carbon copy) recipients to the {@link Email} that is being built.
    *
    * @param bcc the "bcc" address to be added.
    * @return this {@link EmailBuilder}
@@ -118,7 +118,7 @@ public final class EmailBuilder {
   }
 
   /**
-   * adds a "to" (primary) recipients to the email that is being built.
+   * adds a "to" (primary) recipients to the {@link Email} that is being built.
    *
    * @param to the "to" address to be added.
    * @return this {@link EmailBuilder}
@@ -129,7 +129,7 @@ public final class EmailBuilder {
   }
 
   /**
-   * adds "Cc" (carbon copy) recipients to the email that is being built.
+   * Adds "Cc" (carbon copy) recipients to the {@link Email} that is being built.
    *
    * @param ccAddresses the "cc" addresses to be set.
    * @return this {@link EmailBuilder}
@@ -140,7 +140,7 @@ public final class EmailBuilder {
   }
 
   /**
-   * adds a single "Cc" (carbon copy) recipient to the email that is being built.
+   * Adds a single "Cc" (carbon copy) recipient to the {@link Email} that is being built.
    *
    * @param cc the "cc" address to be set.
    * @return this {@link EmailBuilder}
@@ -162,7 +162,7 @@ public final class EmailBuilder {
   }
 
   /**
-   * sets an additional header of the email that is being built.
+   * Sets an additional header of the {@link Email} that is being built.
    *
    * @param key the key name of the header.
    * @param val the value of the header.
@@ -174,7 +174,7 @@ public final class EmailBuilder {
   }
 
   /**
-   * adds "ReplyTo" addresses to the email that is being built.
+   * Adds "ReplyTo" addresses to the {@link Email} that is being built.
    *
    * @param replyToAddresses the "replyTo" addresses to be set.
    * @return this {@link EmailBuilder}
@@ -185,7 +185,7 @@ public final class EmailBuilder {
   }
 
   /**
-   * sets the specified body to the email that is being built.
+   * Sets the specified {@link EmailBody} to the {@link Email} that is being built.
    */
   public EmailBuilder withBody(EmailBody body) {
     this.body = body;
@@ -193,7 +193,7 @@ public final class EmailBuilder {
   }
 
   /**
-   * sets a plain text body to the email that is being built.
+   * Sets a plain text {@link EmailBody} to the {@link Email} that is being built.
    */
   public EmailBuilder withBody(String body) {
     this.body = new EmailBody(body);
@@ -201,7 +201,7 @@ public final class EmailBuilder {
   }
 
   /**
-   * sets a list of attachments to bound in the email that is being built.
+   * Sets a {@link List} of {@link EmailAttachment}s to bound in the {@link Email} that is being built.
    */
   public EmailBuilder withAttachments(List<EmailAttachment> attachments) {
     this.attachments.addAll(attachments);
@@ -209,7 +209,7 @@ public final class EmailBuilder {
   }
 
   /**
-   * adds an attachment to the email that is being built.
+   * Adds an {@link EmailAttachment} to the {@link Email} that is being built.
    */
   public EmailBuilder withAttachment(EmailAttachment attachment) {
     this.attachments.add(attachment);
@@ -217,22 +217,33 @@ public final class EmailBuilder {
   }
 
   /**
-   * builds the new {@link Email} instance.
+   * Builds the new {@link Email} instance.
    */
   public Email build() {
 
-    if (body == null) {
-      throw new IllegalStateException("Cannot build an Email message with no body");
+    if (from.isEmpty()) {
+      throw new IllegalStateException(format("%s%s", ERROR, " FROM address"));
     }
 
     if (to.isEmpty()) {
-      throw new IllegalStateException("Cannot build an Email message with no TO address(es)");
+      throw new IllegalStateException(format("%s%s", ERROR, " TO address(es)"));
     }
 
-    if (from.isEmpty()) {
-      throw new IllegalStateException("Cannot build an Email message with no from address");
+    if (body == null) {
+      throw new IllegalStateException(format("%s%s", ERROR, " body"));
     }
 
-    return new OutgoingEmail(subject, from, to, bcc, cc, replyTo, body, attachments, headers);
+    return new OutgoingEmail(
+        subject,
+        from,
+        to,
+        bcc,
+        cc,
+        replyTo,
+        body,
+        attachments,
+        headers);
   }
+
+  private static final String ERROR = "Cannot build an Email with no ";
 }
