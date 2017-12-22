@@ -25,102 +25,213 @@
  */
 package desi.juan.email.api;
 
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ImmutableList;
 
+import javax.mail.Folder;
+import javax.mail.Header;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
+import static com.google.common.collect.ImmutableList.copyOf;
+
 /**
- * Generic contract for email messages implementations.
+ * Generic contract for Email implementations.
  */
-public interface Email {
+public abstract class Email {
 
   /**
-   * @return the number is the relative position of the email in its Folder.
-   * <p>
-   * Valid message numbers start at 1. Emails that do not belong to any folder (like newly composed or derived messages) have 0 as
+   * @return the number is the relative position of this Email in its {@link Folder}.
+   *
+   * Valid message numbers start at 1. Emails that do not belong to any {@link Folder} (like newly composed or derived messages) have 0 as
    * their message number.
    */
-  int getNumber();
+  public abstract int getNumber();
 
   /**
-   * Get the unique id of the email.
+   * Get the unique id of this Email.
    *
-   * @return the message id
+   * @return this Email's id
    */
-  long getId();
+  public abstract long getId();
 
   /**
-   * Get the addresses to which replies should be directed. This will usually be the sender of the email, but some emails may
-   * direct replies to a different address
+   * The subject of this {@link Email}.
+   */
+  private final String subject;
+
+  /**
+   * @return the subject of this Email.
+   */
+  public final String getSubject() {
+    return subject;
+  }
+
+  /**
+   * The recipient addresses of "To" (primary) type.
+   */
+  private final ImmutableList<String> toAddresses;
+
+  /**
+   * @return a {@link ImmutableList} with all the recipient addresses of "To" (primary) type.
+   */
+  public final ImmutableList<String> getToAddresses() {
+    return toAddresses;
+  }
+
+  /**
+   * The recipient addresses of "Bcc" (blind carbon copy) type.
+   */
+  private final ImmutableList<String> bccAddresses;
+
+  /**
+   * @return a {@link ImmutableList} with all the recipient addresses of "Bcc" (blind carbon copy) type.
+   */
+  public final ImmutableList<String> getBccAddresses() {
+    return bccAddresses;
+  }
+
+  /**
+   * The recipient addresses of "Cc" (carbon copy) type.
+   */
+  private final ImmutableList<String> ccAddresses;
+
+  /**
+   * @return a {@link ImmutableList} with all the recipient addresses of "Cc" (carbon copy) type.
+   */
+  public ImmutableList<String> getCcAddresses() {
+    return ccAddresses;
+  }
+
+  /**
+   * The address(es) of the person(s) who sent this Email. This is usually just one person but may be multiple.
+   *
+   * This field can be faked and does not confirm the person is who they claim to be.
+   */
+  private final ImmutableList<String> fromAddresses;
+
+  /**
+   * Get the address(es) of the person(s) who sent this Email.
+   *
+   * @return a {@link ImmutableList} with the from addresses.
+   */
+  public ImmutableList<String> getFromAddresses() {
+    return fromAddresses;
+  }
+
+  /**
+   * The addresses to which this Email should reply.
+   */
+  private final ImmutableList<String> replyToAddresses;
+
+  /**
+   * Get the addresses to which replies should be directed. This will usually be the same as fromAddresses, but may be different.
    *
    * @return all the recipient addresses of replyTo type.
    */
-  List<String> getReplyToAddresses();
+  public final ImmutableList<String> getReplyToAddresses() {
+    return replyToAddresses;
+  }
 
   /**
-   * @return the subject of the email.
-   */
-  String getSubject();
-
-  /**
-   * @return all the recipient addresses of "To" (primary) type.
-   */
-  List<String> getToAddresses();
-
-  /**
-   * @return all the recipient addresses of "Bcc" (blind carbon copy) type.
-   */
-  List<String> getBccAddresses();
-
-  /**
-   * @return all the recipient addresses of "Cc" (carbon copy) type.
-   */
-  List<String> getCcAddresses();
-
-  /**
-   * Get the identity of the person(s) who wished this message to be sent.
+   * Get the {@link LocalDateTime} this Email was received.
    *
-   * @return all the from addresses.
+   * @return the {@link LocalDateTime} this Email was received.
    */
-  List<String> getFromAddresses();
+  public abstract Optional<LocalDateTime> getReceivedDate();
 
   /**
-   * Get the date this message was received.
+   * The time where the email was sent.
    *
-   * @return the date this message was received.
+   * Different {@link Folder} implementations may assign this value or not.
    */
-  Optional<LocalDateTime> getReceivedDate();
+  private final LocalDateTime sentDate;
 
   /**
-   * Get the date this message was sent.
+   * Get the {@link LocalDateTime} this Email was sent.
    *
-   * @return the date this message was sent.
+   * @return the {@link LocalDateTime} this Email was sent.
    */
-  Optional<LocalDateTime> getSentDate();
+  public final Optional<LocalDateTime> getSentDate() {
+    return Optional.ofNullable(sentDate);
+  }
 
   /**
-   * @return all the headers of this email message.
+   * @return an {@link EmailFlags} containing the flags set in the Email.
    */
-  Multimap<String, String> getHeaders();
+  public abstract EmailFlags getFlags();
 
   /**
-   * @return an {@link EmailFlags} object containing the flags setted in the email.
+   * The body of this Email
    */
-  EmailFlags getFlags();
+  private final EmailBody body;
 
   /**
-   * Get the body of the email, a text content of type "text/*";
+   * Get the body of this Email.
    *
-   * @return the body content of the email.
+   * @return the {@link EmailBody} of this Email.
    */
-  EmailBody getBody();
+  public final EmailBody getBody() {
+    return body;
+  }
 
   /**
-   * Get the attachments of the email, an empty list is returned when there are no attachments.
-   *
-   * @return a {@link List} with the attachments of the email.
+   * A {@link ImmutableList} with all the {@link EmailAttachment}s of this Email.
    */
-  List<EmailAttachment> getAttachments();
+  private final ImmutableList<EmailAttachment> attachments;
+
+  /**
+   * Get the attachments of this Email. An empty {@link ImmutableList} is returned when there are no {@link EmailAttachment}s.
+   *
+   * @return a {@link ImmutableList} with the {@link EmailAttachment}s of this Email.
+   */
+  public final ImmutableList<EmailAttachment> getAttachments() {
+    return attachments;
+  }
+
+  /**
+   * The headers of this Email.
+   */
+  private final ImmutableList<Header> headers;
+
+  /**
+   * @return all the @{link Header}s of this Email.
+   */
+  public final ImmutableList<Header> getHeaders() {
+    return headers;
+  }
+
+  /**
+   * Creates a new instance.
+   *
+   * @param subject
+   * @param fromAddresses
+   * @param toAddresses
+   * @param bccAddresses
+   * @param ccAddresses
+   * @param replyToAddresses
+   * @param body
+   * @param attachments
+   * @param headers
+   */
+  protected Email(final String subject,
+                  final ImmutableList<String> fromAddresses,
+                  final ImmutableList<String> toAddresses,
+                  final ImmutableList<String> ccAddresses,
+                  final ImmutableList<String> bccAddresses,
+                  final ImmutableList<String> replyToAddresses,
+                  final LocalDateTime sentDate,
+                  final EmailBody body,
+                  final ImmutableList<EmailAttachment> attachments,
+                  final ImmutableList<Header> headers) {
+    this.subject = subject;
+    this.sentDate = sentDate;
+    this.toAddresses = copyOf(toAddresses);
+    this.ccAddresses = copyOf(ccAddresses);
+    this.bccAddresses = copyOf(bccAddresses);
+    this.fromAddresses = copyOf(fromAddresses);
+    this.replyToAddresses = copyOf(replyToAddresses);
+    this.body = body;
+    this.attachments = copyOf(attachments);
+    this.headers = copyOf(headers);
+  }
 }

@@ -25,211 +25,71 @@
  */
 package desi.juan.email.internal;
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ImmutableList;
 import desi.juan.email.api.Email;
 import desi.juan.email.api.EmailAttachment;
 import desi.juan.email.api.EmailBody;
 import desi.juan.email.api.EmailFlags;
 
-import javax.mail.Folder;
+import javax.mail.Header;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
-import static com.google.common.collect.ImmutableList.copyOf;
+import static java.lang.String.format;
 import static java.time.LocalDateTime.now;
 
 /**
- * Contains all the metadata of an email, it carries information such as the subject of the email, the id in the mailbox and the
- * recipients between others.
+ * An implementation of an {@link Email} to be used for outgoing messages.
  */
-public class OutgoingEmail implements Email {
+public class OutgoingEmail extends Email {
 
   /**
-   * The address(es) of the person(s) which sent the email.
-   * <p>
-   * This will usually be the sender of the email, but some emails may direct replies to a different address
-   */
-  private final List<String> fromAddresses;
-
-  /**
-   * The recipient addresses of "To" (primary) type.
-   */
-  private final List<String> toAddresses;
-
-  /**
-   * The recipient addresses of "Cc" (carbon copy) type
-   */
-  private final List<String> ccAddresses;
-
-  /**
-   * The recipient addresses of "Bcc" (blind carbon copy) type
-   */
-  private final List<String> bccAddresses;
-
-  /**
-   * The email addresses to which this email should reply.
-   */
-  private final List<String> replyToAddresses;
-
-  /**
-   * The headers that this email carry.
-   */
-  private final Multimap<String, String> headers;
-
-  /**
-   * The subject of the email.
-   */
-  private final String subject;
-
-  /**
-   * The time where the email was sent.
-   * <p>
-   * Different {@link Folder} implementations may assign this value or not.
-   */
-  private final LocalDateTime sentDate;
-
-  /**
-   * the attachments bounded to be sent with the email.
-   */
-  private final List<EmailAttachment> attachments;
-
-  /**
-   * the text body of the email.
-   */
-  private final EmailBody body;
-
-  /**
+   * /**
    * Creates a new instance.
+   *
+   * @param subject
+   * @param fromAddresses
+   * @param toAddresses
+   * @param bccAddresses
+   * @param ccAddresses
+   * @param replyToAddresses
+   * @param body
+   * @param attachments
+   * @param headers
    */
-  public OutgoingEmail(String subject,
-                       List<String> fromAddresses,
-                       List<String> toAddresses,
-                       List<String> bccAddresses,
-                       List<String> ccAddresses,
-                       List<String> replyToAddresses,
-                       EmailBody body,
-                       List<EmailAttachment> attachments,
-                       Multimap<String, String> headers) {
-    this.subject = subject;
-    this.sentDate = now();
-    this.toAddresses = copyOf(toAddresses);
-    this.ccAddresses = copyOf(ccAddresses);
-    this.bccAddresses = copyOf(bccAddresses);
-    this.fromAddresses = copyOf(fromAddresses);
-    this.replyToAddresses = copyOf(replyToAddresses);
-    this.body = body;
-    this.attachments = copyOf(attachments);
-    this.headers = ImmutableMultimap.copyOf(headers);
+  OutgoingEmail(String subject,
+                final ImmutableList<String> fromAddresses,
+                final ImmutableList<String> toAddresses,
+                final ImmutableList<String> bccAddresses,
+                final ImmutableList<String> ccAddresses,
+                final ImmutableList<String> replyToAddresses,
+                EmailBody body,
+                final ImmutableList<EmailAttachment> attachments,
+                final ImmutableList<Header> headers) {
+    super(subject, fromAddresses, toAddresses, ccAddresses, bccAddresses, replyToAddresses, now(), body, attachments, headers);
   }
 
   @Override
   public int getNumber() {
-    throw new UnsupportedOperationException("Outgoing emails does not contain number, the number is set when the message arrives to a folder");
+    throw new UnsupportedOperationException(format("%s%s%s", ERROR_DO_NOT_CONTAIN, "a number which is", ERROR_SET_WHEN));
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public long getId() {
-    throw new UnsupportedOperationException("Outgoing emails does not contain id, the id is set when the message arrives to a folder");
+    throw new UnsupportedOperationException(format("%s%s%s", ERROR_DO_NOT_CONTAIN, "an id which is", ERROR_SET_WHEN));
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<String> getReplyToAddresses() {
-    return replyToAddresses;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public String getSubject() {
-    return subject;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<String> getToAddresses() {
-    return toAddresses;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<String> getBccAddresses() {
-    return bccAddresses;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<String> getCcAddresses() {
-    return ccAddresses;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<String> getFromAddresses() {
-    return fromAddresses;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Optional<LocalDateTime> getSentDate() {
-    return Optional.ofNullable(sentDate);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Multimap<String, String> getHeaders() {
-    return headers != null ? ImmutableMultimap.copyOf(headers) : ImmutableMultimap.of();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public EmailBody getBody() {
-    return body;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<EmailAttachment> getAttachments() {
-    return attachments;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public Optional<LocalDateTime> getReceivedDate() {
-    throw new UnsupportedOperationException("Outgoing emails does not contain a received date, the received date is set when the message arrives to a folder");
+    throw new UnsupportedOperationException(format("%s%s%s", ERROR_DO_NOT_CONTAIN, "a received date which is", ERROR_SET_WHEN));
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public EmailFlags getFlags() {
-    throw new UnsupportedOperationException("Outgoing emails are not flagged, flags are set when the message arrives to a folder");
+    throw new UnsupportedOperationException(format("%s%s%s", ERROR_DO_NOT_CONTAIN, "flags, which are", ERROR_SET_WHEN));
   }
+
+  private static final String ERROR_EMAILS = "OutgoingEmails";
+  private static final String ERROR_DO_NOT_CONTAIN = ERROR_EMAILS + " do not contain ";
+  private static final String ERROR_SET_WHEN = " set when the Email arrives to a folder.";
 }
