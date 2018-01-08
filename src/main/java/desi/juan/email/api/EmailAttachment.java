@@ -47,12 +47,12 @@ public final class EmailAttachment extends EmailData {
   }
 
   /**
-   * The {@link Header}s bounded to the attachment
+   * The {@link Header}s for this attachment.
    */
   private final ImmutableList<Header> headers;
 
   /**
-   * @return a set of {@link Header}s that are specific for this attachment. Examples: Content-Type or Content-Disposition.
+   * @return a {@link ImmutableList} of {@link Header}s that are specific for this attachment. Examples: Content-Type or Content-Disposition.
    */
   public ImmutableList<Header> getHeaders() {
     return headers;

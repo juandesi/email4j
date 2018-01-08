@@ -45,7 +45,7 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
   private Folder folder;
 
   /**
-   * Default Constructor
+   * Creates a new instance.
    *
    * @param protocol
    * @param username
