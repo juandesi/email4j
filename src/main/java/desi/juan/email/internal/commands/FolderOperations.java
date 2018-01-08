@@ -25,7 +25,9 @@
  */
 package desi.juan.email.internal.commands;
 
+import com.google.common.collect.ImmutableList;
 import desi.juan.email.api.Email;
+import desi.juan.email.api.EmailTools;
 import desi.juan.email.internal.StoredEmail;
 import desi.juan.email.internal.exception.RetrieveEmailException;
 
@@ -35,7 +37,6 @@ import javax.mail.MessagingException;
 import javax.mail.UIDFolder;
 import javax.mail.search.SearchTerm;
 import java.util.Date;
-import java.util.List;
 
 import static java.lang.String.format;
 
@@ -55,109 +56,111 @@ public interface FolderOperations {
    */
   default Email retrieveById(UIDFolder folder, long uid) {
     try {
-      Message email = folder.getMessageByUID(uid);
-      return new StoredEmail(email, uid, true);
+      Message message = folder.getMessageByUID(uid);
+      StoredEmail.Builder builder = new StoredEmail.Builder();
+      builder.message(message).id(uid).readContent(true).build();
+      return builder.build();
     } catch (MessagingException e) {
       throw new RetrieveEmailException(format("Cannot retrieve email id:[%s] from folder [%s]", uid, folder));
     }
   }
 
   /**
-   * Helper method. Retrieves all messages in folder.
+   * Helper method. Retrieves all {@link Email}s in a {@link Folder}.
    *
    * @param folder
    * @param readContent
-   * @return List<Email>
+   * @return ImmutableList<Email>
    * @see #retrieve(Folder, boolean, int)
    */
-  default List<Email> retrieve(Folder folder, boolean readContent) {
+  default ImmutableList<Email> retrieve(Folder folder, boolean readContent) {
     return retrieve(folder, readContent, ALL_MESSAGES);
   }
 
   /**
-   * Helper method
+   * Helper method.
    *
    * @param folder
    * @param readContent
    * @param numToRetrieve
-   * @return List<Email>
-   * @see FolderOperationsInternal#getMessages(Folder, boolean, int)
-   * @see FolderOperationsInternal#toStoredList(Message[], boolean)
+   * @return immutable list of Emails.
+   * @see EmailTools#getMessages(Folder, boolean, int)
+   * @see EmailTools#toStoredList(Message[], boolean)
    */
-  default List<Email> retrieve(Folder folder, boolean readContent, int numToRetrieve) {
-    Message[] emails = FolderOperationsInternal.getMessages(folder, readContent, numToRetrieve);
-    return FolderOperationsInternal.toStoredList(emails, readContent);
+  default ImmutableList<Email> retrieve(Folder folder, boolean readContent, int numToRetrieve) {
+    Message[] emails = EmailTools.getMessages(folder, readContent, numToRetrieve);
+    return EmailTools.toStoredList(emails, readContent);
   }
 
   /**
-   * Helper method
+   * Helper method.
    *
    * @param folder
    * @param readContent
    * @param terms
-   * @return List<Email>
-   * @see FolderOperationsInternal#search(Folder, SearchTerm...)
-   * @see FolderOperationsInternal#toStoredList(Message[], boolean)
+   * @return immutable list of Emails.
+   * @see EmailTools#search(Folder, SearchTerm...)
+   * @see EmailTools#toStoredList(Message[], boolean)
    */
-  default List<Email> search(Folder folder, boolean readContent, SearchTerm... terms) throws MessagingException {
-    Message[] emails = FolderOperationsInternal.search(folder, terms);
-    return FolderOperationsInternal.toStoredList(emails, readContent);
+  default ImmutableList<Email> search(Folder folder, boolean readContent, SearchTerm... terms) throws MessagingException {
+    Message[] emails = EmailTools.search(folder, terms);
+    return EmailTools.toStoredList(emails, readContent);
   }
 
   /**
-   * Helper method
+   * Helper method.
    *
    * @param folder
    * @param readContent
    * @param olderThan
    * @param newerThan
-   * @return List<Email>
-   * @see FolderOperationsInternal#search(Folder, Date, Date)
-   * @see FolderOperationsInternal#toStoredList(Message[], boolean)
+   * @return immutable list of Emails
+   * @see EmailTools#search(Folder, Date, Date)
+   * @see EmailTools#toStoredList(Message[], boolean)
    */
-  default List<Email> search(Folder folder, boolean readContent, Date olderThan, Date newerThan) throws MessagingException {
-    Message[] emails = FolderOperationsInternal.search(folder, olderThan, newerThan);
-    return FolderOperationsInternal.toStoredList(emails, readContent);
+  default ImmutableList<Email> search(Folder folder, boolean readContent, Date olderThan, Date newerThan) throws MessagingException {
+    Message[] emails = EmailTools.search(folder, olderThan, newerThan);
+    return EmailTools.toStoredList(emails, readContent);
   }
 
   /**
-   * Helper method
+   * Helper method.
    *
    * @param fromFolder
    * @param readContent
    * @param numToRetrieve
    * @param moveToFolder
-   * @return List<Email>
-   * @see FolderOperationsInternal#getMessages(Folder, boolean, int)
-   * @see FolderOperationsInternal#move(Folder, Message[], Folder)
-   * @see FolderOperationsInternal#toStoredList(Message[], boolean)
+   * @return immutable list of Emails.
+   * @see EmailTools#getMessages(Folder, boolean, int)
+   * @see EmailTools#move(Folder, Message[], Folder)
+   * @see EmailTools#toStoredList(Message[], boolean)
    */
-  default List<Email> retrieveAndMove(Folder fromFolder, boolean readContent, int numToRetrieve, Folder moveToFolder) throws MessagingException {
-    Message[] emails = FolderOperationsInternal.getMessages(fromFolder, readContent, numToRetrieve);
-    List<Email> storedEmails = FolderOperationsInternal.toStoredList(emails, readContent);
+  default ImmutableList<Email> retrieveAndMove(Folder fromFolder, boolean readContent, int numToRetrieve, Folder moveToFolder) throws MessagingException {
+    Message[] emails = EmailTools.getMessages(fromFolder, readContent, numToRetrieve);
+    ImmutableList<Email> storedEmails = EmailTools.toStoredList(emails, readContent);
     if (emails.length > 1) {
-      FolderOperationsInternal.move(fromFolder, emails, moveToFolder);
+      EmailTools.move(fromFolder, emails, moveToFolder);
     }
     return storedEmails;
   }
 
   /**
-   * Helper method
+   * Helper method.
    *
    * @param searchInfolder
    * @param readContent
    * @param terms
    * @param moveToFolder
-   * @return List<Email>
-   * @see FolderOperationsInternal#search(Folder, SearchTerm...)
-   * @see FolderOperationsInternal#move(Folder, Message[], Folder)
-   * @see FolderOperationsInternal#toStoredList(Message[], boolean)
+   * @return immutable list of Emails.
+   * @see EmailTools#search(Folder, SearchTerm...)
+   * @see EmailTools#move(Folder, Message[], Folder)
+   * @see EmailTools#toStoredList(Message[], boolean)
    */
-  default List<Email> searchAndMove(Folder searchInfolder, boolean readContent, Folder moveToFolder, SearchTerm... terms) throws MessagingException {
-    Message[] emails = FolderOperationsInternal.search(searchInfolder, terms);
-    List<Email> storedEmails = FolderOperationsInternal.toStoredList(emails, readContent);
+  default ImmutableList<Email> searchAndMove(Folder searchInfolder, boolean readContent, Folder moveToFolder, SearchTerm... terms) throws MessagingException {
+    Message[] emails = EmailTools.search(searchInfolder, terms);
+    ImmutableList<Email> storedEmails = EmailTools.toStoredList(emails, readContent);
     if (emails.length > 1) {
-      FolderOperationsInternal.move(searchInfolder, emails, moveToFolder);
+      EmailTools.move(searchInfolder, emails, moveToFolder);
     }
     return storedEmails;
   }
@@ -170,30 +173,30 @@ public interface FolderOperations {
    * @param moveToFolder
    * @param newerThan
    * @param olderThan
-   * @return List<Email>
-   * @see FolderOperationsInternal#search(Folder, Date, Date)
-   * @see FolderOperationsInternal#move(Folder, Message[], Folder)
-   * @see FolderOperationsInternal#toStoredList(Message[], boolean)
+   * @return immutable list of Emails.
+   * @see EmailTools#search(Folder, Date, Date)
+   * @see EmailTools#move(Folder, Message[], Folder)
+   * @see EmailTools#toStoredList(Message[], boolean)
    */
-  default List<Email> searchAndMove(Folder searchInfolder, boolean readContent, Folder moveToFolder, Date olderThan, Date newerThan) throws MessagingException {
-    Message[] emails = FolderOperationsInternal.search(searchInfolder, olderThan, newerThan);
-    List<Email> storedEmails = FolderOperationsInternal.toStoredList(emails, readContent);
+  default ImmutableList<Email> searchAndMove(Folder searchInfolder, boolean readContent, Folder moveToFolder, Date olderThan, Date newerThan) throws MessagingException {
+    Message[] emails = EmailTools.search(searchInfolder, olderThan, newerThan);
+    ImmutableList<Email> storedEmails = EmailTools.toStoredList(emails, readContent);
     if (emails.length > 1) {
-      FolderOperationsInternal.move(searchInfolder, emails, moveToFolder);
+      EmailTools.move(searchInfolder, emails, moveToFolder);
     }
     return storedEmails;
   }
 
   /**
-   * Helper method
+   * Helper method.
    *
    * @param fromFolder
    * @param readContent
    * @param numToRetrieve
    * @param toFolder
-   * @see FolderOperationsInternal#move(Folder, boolean, int, Folder)
+   * @see EmailTools#move(Folder, boolean, int, Folder)
    */
   default void move(Folder fromFolder, boolean readContent, int numToRetrieve, Folder toFolder) throws MessagingException {
-    FolderOperationsInternal.move(fromFolder, readContent, numToRetrieve, toFolder);
+    EmailTools.move(fromFolder, readContent, numToRetrieve, toFolder);
   }
 }
