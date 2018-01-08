@@ -46,7 +46,12 @@ public abstract class AbstractConnection {
   private static final String USERNAME_NO_PASSWORD_ERROR = "Username provided but not password was specified.";
 
   final Session session;
+
   private final EmailProtocol protocol;
+
+  public final EmailProtocol getProtocol() {
+    return protocol;
+  }
 
   /**
    * Default Constructor
