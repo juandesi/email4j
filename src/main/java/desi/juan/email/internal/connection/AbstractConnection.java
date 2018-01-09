@@ -34,6 +34,8 @@ import javax.mail.Session;
 import java.util.Map;
 import java.util.Properties;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 /**
  * Generic implementation for an email connection of a connector which operates over the SMTP, IMAP, POP3 and its secure versions
  * protocols.
@@ -42,8 +44,7 @@ import java.util.Properties;
  */
 public abstract class AbstractConnection {
 
-  private static final String PASSWORD_NO_USERNAME_ERROR = "Password provided but not username was specified.";
-  private static final String USERNAME_NO_PASSWORD_ERROR = "Username provided but not password was specified.";
+  private static final String ERROR = "%s provided but no %s was specified.";
 
   final Session session;
 
@@ -102,9 +103,9 @@ public abstract class AbstractConnection {
     final Properties props = new Properties();
     props.setProperty(protocol.getPortProperty(), Integer.toString(port));
     props.setProperty(protocol.getHostProperty(), host);
-    props.setProperty(protocol.getReadTimeoutProperty(), Long.toString(readTimeout));
-    props.setProperty(protocol.getConnectionTimeoutProperty(), Long.toString(connectionTimeout));
-    props.setProperty(protocol.getWriteTimeoutProperty(), Long.toString(writeTimeout));
+    props.setProperty(protocol.getReadTimeoutProperty(), Long.toString(SECONDS.toMillis(readTimeout)));
+    props.setProperty(protocol.getConnectionTimeoutProperty(), Long.toString(SECONDS.toMillis(connectionTimeout)));
+    props.setProperty(protocol.getWriteTimeoutProperty(), Long.toString(SECONDS.toMillis(writeTimeout)));
     props.setProperty(protocol.getTransportProtocolProperty(), protocol.getName());
     return props;
   }
@@ -142,7 +143,7 @@ public abstract class AbstractConnection {
     private String username;
     private String password;
 
-    UserPassAuthenticator(String username, String password) {
+    UserPassAuthenticator(final String username, final String password) {
       this.username = username;
       this.password = password;
     }

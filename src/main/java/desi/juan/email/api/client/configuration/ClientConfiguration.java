@@ -51,14 +51,14 @@ public class ClientConfiguration {
    * @return
    */
   public ClientConfiguration() {
-    this(10000, Collections.emptyMap(), 10000, null, 10000);
+    this(10, Collections.emptyMap(), 10, null, 10);
   }
 
-  public ClientConfiguration(long connectionTimeout,
-                             Map<String, String> properties,
-                             long readTimeout,
-                             TlsConfiguration tlsConfig,
-                             long writeTimeout) {
+  public ClientConfiguration(final long connectionTimeout,
+                             final Map<String, String> properties,
+                             final long readTimeout,
+                             final TlsConfiguration tlsConfig,
+                             final long writeTimeout) {
     this.connectionTimeout = connectionTimeout;
     this.properties = ImmutableMap.copyOf(properties);
     this.readTimeout = readTimeout;
