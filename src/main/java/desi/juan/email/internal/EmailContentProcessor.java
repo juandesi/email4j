@@ -40,7 +40,7 @@ import static desi.juan.email.api.EmailConstants.TEXT;
 import static javax.mail.Part.ATTACHMENT;
 
 /**
- * Given a {@link Message} introspects it's content to obtain the body an the attachments if any.
+ * Given a {@link Message} introspects its content to obtain the {@link EmailBody} an the {@link EmailAttachment}s if any.
  */
 class EmailContentProcessor {
 
@@ -58,7 +58,7 @@ class EmailContentProcessor {
    * @param message the {@link Message} to be processed.
    */
   private EmailContentProcessor(Message message) {
-    processPart(message);
+        processPart(message);
   }
 
   /**

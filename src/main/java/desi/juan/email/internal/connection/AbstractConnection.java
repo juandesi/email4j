@@ -54,19 +54,28 @@ public abstract class AbstractConnection {
   }
 
   /**
-   * Default Constructor
+   * @param protocol
+   * @param username
+   * @param password
+   * @param host
+   * @param port
+   * @param connectionTimeout Socket connection timeout value in seconds
+   * @param readTimeout       Socket read timeout value in seconds
+   * @param writeTimeout      Socket write timeout value in seconds
+   * @param properties
+   * @throws EmailConnectionException
    */
-  AbstractConnection(EmailProtocol protocol,
-                     String username,
-                     String password,
-                     String host,
-                     int port,
-                     long connectionTimeout,
-                     long readTimeout,
-                     long writeTimeout,
-                     Map<String, String> properties) throws EmailConnectionException {
+  AbstractConnection(final EmailProtocol protocol,
+                     final String username,
+                     final String password,
+                     final String host,
+                     final int port,
+                     final long connectionTimeout,
+                     final long readTimeout,
+                     final long writeTimeout,
+                     final Map<String, String> properties) throws EmailConnectionException {
     this.protocol = protocol;
-    Properties sessionProperties = buildBasicSessionProperties(host, port, connectionTimeout, readTimeout, writeTimeout);
+    final Properties sessionProperties = buildBasicSessionProperties(host, port, connectionTimeout, readTimeout, writeTimeout);
 
     if (properties != null) {
       sessionProperties.putAll(properties);
@@ -85,12 +94,12 @@ public abstract class AbstractConnection {
   /**
    * Creates a new {@link Properties} instance and set all the basic properties required by the specified {@code protocol}.
    */
-  private Properties buildBasicSessionProperties(String host,
-                                                 int port,
-                                                 long connectionTimeout,
-                                                 long readTimeout,
-                                                 long writeTimeout) throws EmailConnectionException {
-    Properties props = new Properties();
+  private Properties buildBasicSessionProperties(final String host,
+                                                 final int port,
+                                                 final long connectionTimeout,
+                                                 final long readTimeout,
+                                                 final long writeTimeout) throws EmailConnectionException {
+    final Properties props = new Properties();
     props.setProperty(protocol.getPortProperty(), Integer.toString(port));
     props.setProperty(protocol.getHostProperty(), host);
     props.setProperty(protocol.getReadTimeoutProperty(), Long.toString(readTimeout));
@@ -114,12 +123,12 @@ public abstract class AbstractConnection {
    * @param username the specified username.
    * @param password the specified password.
    */
-  private boolean shouldAuthenticate(String username, String password) {
+  private boolean shouldAuthenticate(final String username, final String password) {
     if (username == null && password != null) {
-      throw new EmailConnectionException(PASSWORD_NO_USERNAME_ERROR);
+      throw new EmailConnectionException(String.format(ERROR, "Password", "username"));
     }
     if (username != null && password == null) {
-      throw new EmailConnectionException(USERNAME_NO_PASSWORD_ERROR);
+      throw new EmailConnectionException(String.format(ERROR, "Username", "password"));
     }
     return username != null;
   }

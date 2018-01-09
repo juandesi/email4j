@@ -45,27 +45,17 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
   private Folder folder;
 
   /**
-   * Creates a new instance.
-   *
-   * @param protocol
-   * @param username
-   * @param password
-   * @param host
-   * @param port
-   * @param connectionTimeout
-   * @param readTimeout
-   * @param writeTimeout
-   * @param properties
+   * {@inheritDoc}
    */
-  public MailboxManagerConnection(EmailProtocol protocol,
-                                  String username,
-                                  String password,
-                                  String host,
-                                  int port,
-                                  long connectionTimeout,
-                                  long readTimeout,
-                                  long writeTimeout,
-                                  Map<String, String> properties) {
+  public MailboxManagerConnection(final EmailProtocol protocol,
+                                  final String username,
+                                  final String password,
+                                  final String host,
+                                  final int port,
+                                  final long connectionTimeout,
+                                  final long readTimeout,
+                                  final long writeTimeout,
+                                  final Map<String, String> properties) {
     super(protocol, username, password, host, port, connectionTimeout, readTimeout, writeTimeout, properties);
     try {
       this.store = session.getStore(protocol.getName());
@@ -75,7 +65,7 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
       } else {
         this.store.connect();
       }
-    } catch (MessagingException e) {
+    } catch (final MessagingException e) {
       throw new EmailConnectionException(format("Error while acquiring connection with the %s store", protocol), e);
     }
   }
@@ -90,7 +80,7 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
    * @param mailBoxFolder
    * @param openMode
    */
-  public synchronized Folder getFolder(String mailBoxFolder, int openMode) {
+  public synchronized Folder getFolder(final String mailBoxFolder, final int openMode) {
     try {
       if (folder != null) {
         if (isCurrentFolder(mailBoxFolder) && folder.isOpen() && folder.getMode() == openMode) {
@@ -102,7 +92,7 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
       folder = getFolder(mailBoxFolder);
       folder.open(openMode);
       return folder;
-    } catch (MessagingException e) {
+    } catch (final MessagingException e) {
       throw new EmailException(format("Error while opening folder [%s]", mailBoxFolder), e);
     }
   }
@@ -112,10 +102,10 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
    *
    * @param mailBoxFolder
    */
-  public synchronized Folder getFolder(String mailBoxFolder) {
+  public synchronized Folder getFolder(final String mailBoxFolder) {
     try {
       return store.getFolder(mailBoxFolder);
-    } catch (MessagingException e) {
+    } catch (final MessagingException e) {
       throw new EmailException(format("Error while retrieving folder [%s]", mailBoxFolder), e);
     }
   }
@@ -125,12 +115,12 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
    *
    * @param expunge
    */
-  public synchronized void closeFolder(boolean expunge) {
+  public synchronized void closeFolder(final boolean expunge) {
     try {
       if (folder != null && folder.isOpen()) {
         folder.close(expunge);
       }
-    } catch (MessagingException e) {
+    } catch (final MessagingException e) {
       throw new EmailException(format("Error while closing mailbox folder %s", folder.getName()), e);
     }
   }
@@ -141,12 +131,12 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
   public synchronized void disconnect() {
     try {
       closeFolder(false);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       //LOGGER.error(format("Error closing mailbox folder [%s] when disconnecting: %s", folder.getName(), e.getMessage()));
     } finally {
       try {
         store.close();
-      } catch (Exception e) {
+      } catch (final Exception e) {
         //LOGGER.error(format("Error closing store when disconnecting: %s", e.getMessage()));
       }
     }
@@ -158,7 +148,7 @@ public abstract class MailboxManagerConnection extends AbstractConnection {
    * @param mailBoxFolder
    * @return true if this is the current folder
    */
-  private boolean isCurrentFolder(String mailBoxFolder) {
+  private boolean isCurrentFolder(final String mailBoxFolder) {
     return folder.getName().equalsIgnoreCase(mailBoxFolder);
   }
 }

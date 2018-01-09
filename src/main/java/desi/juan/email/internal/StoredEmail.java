@@ -58,9 +58,6 @@ public class StoredEmail extends Email {
    */
   private final int number;
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public int getNumber() {
     return number;
@@ -72,9 +69,6 @@ public class StoredEmail extends Email {
    */
   private final long id;
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public long getId() {
     return id;

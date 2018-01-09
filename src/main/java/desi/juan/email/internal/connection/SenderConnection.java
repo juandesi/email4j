@@ -35,17 +35,17 @@ import java.util.Map;
 public abstract class SenderConnection extends AbstractConnection {
 
   /**
-   * Default Constructor
+   * {@inheritDoc}
    */
-  public SenderConnection(EmailProtocol protocol,
-                          String username,
-                          String password,
-                          String host,
-                          int port,
-                          long connectionTimeout,
-                          long readTimeout,
-                          long writeTimeout,
-                          Map<String, String> properties) {
+  public SenderConnection(final EmailProtocol protocol,
+                          final String username,
+                          final String password,
+                          final String host,
+                          final int port,
+                          final long connectionTimeout,
+                          final long readTimeout,
+                          final long writeTimeout,
+                          final Map<String, String> properties) {
     super(protocol, username, password, host, port, connectionTimeout, readTimeout, writeTimeout, properties);
   }
 }
