@@ -25,57 +25,38 @@
  */
 package desi.juan.email.api.client;
 
-import desi.juan.email.Email4JTestCase;
+import com.google.common.collect.ImmutableList;
 import desi.juan.email.api.Email;
+import desi.juan.email.api.ReceiveTestCase;
 import desi.juan.email.api.client.configuration.ClientConfiguration;
 import desi.juan.email.internal.EmailProtocol;
-import desi.juan.email.internal.StoredEmail;
+import desi.juan.email.internal.connection.MailboxManagerConnection;
 import org.junit.Before;
-import org.junit.Test;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import java.io.IOException;
-import java.util.List;
-
-import static desi.juan.email.EmailTestUtils.GOKU_EMAIL;
-import static desi.juan.email.EmailTestUtils.getSinglePartTestMessage;
 import static desi.juan.email.api.EmailConstants.INBOX_FOLDER;
 import static javax.mail.Folder.READ_ONLY;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
-public class ImapClientTestCase extends Email4JTestCase {
+public class ImapClientTestCase extends ReceiveTestCase {
 
   private ImapClient client;
 
   @Before
-  public void sendInitialEmailBatch() throws MessagingException, IOException {
-    for (int i = 0; i < 10; i++) {
-      user.deliver((MimeMessage) getSinglePartTestMessage());
-    }
-  }
-
-  @Before
-  public void createClient() {
-    client = new ImapClient(GOKU_EMAIL, PASSWORD, HOST, PORT, new ClientConfiguration());
-  }
-
-  @Test
-  public void receive() {
-    List<Email> emails = client.retrieve(client.getFolder(INBOX_FOLDER, READ_ONLY), true);
-    assertThat(emails.size(), is(10));
-    emails.forEach(e -> {
-      assertThat(e, is(instanceOf(StoredEmail.class)));
-      assertBodyContent(e);
-      assertSubject(e);
-      assertThat(e.getHeaders().size(), is(7));
-    });
+  public void before() {
+    client = new ImapClient(USER, PASSWORD, HOST, PORT, new ClientConfiguration());
   }
 
   @Override
-  public String getProtocol() {
-    return EmailProtocol.IMAP.getName();
+  protected EmailProtocol getProtocol() {
+    return EmailProtocol.IMAP;
+  }
+
+  @Override
+  protected ImmutableList<Email> getEmails() {
+    return client.retrieve(client.getFolder(INBOX_FOLDER, READ_ONLY), true);
+  }
+
+  @Override
+  protected MailboxManagerConnection getClient() {
+    return client;
   }
 }
