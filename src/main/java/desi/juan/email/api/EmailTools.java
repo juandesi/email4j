@@ -53,7 +53,6 @@ public class EmailTools {
     final String csParam = contentType.getParameter("charset");
     // TODO: verify logic
     if (csParam == null) {
-      System.out.println("charset was null; using default for contentType: " + contentType);
       return DEFAULT_CHARSET;
     }
     try {
@@ -72,7 +71,6 @@ public class EmailTools {
     try {
       return new ContentType(contentType);
     } catch (final Exception e) {
-      System.out.println("empty contenttype");
       // TODO: should this do something else?
       return new ContentType();
     }
