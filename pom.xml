@@ -11,9 +11,7 @@
 
     <properties>
         <javaMailVersion>1.6.0</javaMailVersion>
-        <guavaVersion>18.0</guavaVersion>
-        <commonsLangVersion>3.7</commonsLangVersion>
-        <commonsIoVersion>2.6</commonsIoVersion>
+        <guavaVersion>23.5-jre</guavaVersion>
         <icegreenVersion>1.5.6</icegreenVersion>
         <junitVintageVersion>5.1.0-M1</junitVintageVersion>
         <mockitoVersion>2.13.0</mockitoVersion>
@@ -67,16 +65,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guavaVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commonsLangVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commonsIoVersion}</version>
         </dependency>
         <!-- Test -->
         <dependency>
