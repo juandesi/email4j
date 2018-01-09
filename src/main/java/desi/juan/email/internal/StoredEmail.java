@@ -163,41 +163,10 @@ public class StoredEmail extends Email {
   }
 
   /**
-   * Parses an array of {@link Address}es to a {@link ImmutableList}.
    *
    * @return ImmutableList with the {@link Address}es as {@link String}s.
    */
-  private static ImmutableList<String> parseAddressArray(Address[] toAddresses) {
-    if (toAddresses != null) {
-      return ImmutableList.copyOf(stream(toAddresses).map(Object::toString).collect(toList()));
-    }
     return ImmutableList.of();
   }
-
-  /**
-   * Parses the {@link Flags} of a {@link Message} to an {@link EmailFlags} instance.
-   *
-   * @param flags
-   * @return {@link EmailFlags}
-   */
-  private static EmailFlags parseFlags(Flags flags) {
-    return new EmailFlags(flags.contains(ANSWERED),
-        flags.contains(DELETED),
-        flags.contains(DRAFT),
-        flags.contains(RECENT),
-        flags.contains(SEEN));
-  }
-
-  /**
-   * Parses a not null {@link Date} to a {@link LocalDateTime} instance.
-   *
-   * @param date
-   * @return date in {@link LocalDateTime} format.
-   */
-  private static LocalDateTime parseDate(Date date) {
-    if (date == null) {
-      return null;
-    }
-    return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-  }
+}
 }

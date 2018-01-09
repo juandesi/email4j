@@ -7,6 +7,8 @@ import desi.juan.email.internal.StoredEmail;
 import desi.juan.email.internal.commands.FlagOperations;
 import desi.juan.email.internal.exception.RetrieveEmailException;
 
+import javax.mail.Address;
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -19,12 +21,21 @@ import javax.mail.search.ReceivedDateTerm;
 import javax.mail.search.SearchTerm;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 import static desi.juan.email.api.EmailConstants.DEFAULT_CHARSET;
 import static desi.juan.email.internal.commands.FolderOperations.ALL_MESSAGES;
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
+import static javax.mail.Flags.Flag.ANSWERED;
+import static javax.mail.Flags.Flag.DELETED;
+import static javax.mail.Flags.Flag.DRAFT;
+import static javax.mail.Flags.Flag.RECENT;
+import static javax.mail.Flags.Flag.SEEN;
 
 public class EmailTools {
 
@@ -38,17 +49,17 @@ public class EmailTools {
    * @param contentType
    * @return charset for the contentType.
    */
-  public static Charset getCharset(ContentType contentType) {
-    String csParam = contentType.getParameter("charset");
+  public static Charset getCharset(final ContentType contentType) {
+    final String csParam = contentType.getParameter("charset");
     // TODO: verify logic
     if (csParam == null) {
       System.out.println("charset was null; using default for contentType: " + contentType);
       return DEFAULT_CHARSET;
     }
     try {
-      String csStr = MimeUtility.decodeText(csParam);
+      final String csStr = MimeUtility.decodeText(csParam);
       return Charset.forName(csStr);
-    } catch (UnsupportedEncodingException e) {
+    } catch (final UnsupportedEncodingException e) {
       return DEFAULT_CHARSET;
     }
   }
@@ -57,10 +68,10 @@ public class EmailTools {
    * @param contentType
    * @return a ContentType instance for the given contentType string.
    */
-  public static ContentType toContentType(String contentType) {
+  public static ContentType toContentType(final String contentType) {
     try {
       return new ContentType(contentType);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       System.out.println("empty contenttype");
       // TODO: should this do something else?
       return new ContentType();
@@ -74,7 +85,7 @@ public class EmailTools {
    * @return the format of the contentType.
    * @{see ContentType. #ContentType}.
    */
-  public static String getFormat(ContentType contentType) {
+  public static String getFormat(final ContentType contentType) {
     return contentType.getBaseType();
   }
 
@@ -87,11 +98,11 @@ public class EmailTools {
    * @see #getEmailUid(Folder, Message)
    * @see Message#getFolder()
    */
-  public static ImmutableList<Email> toStoredList(Message[] messages, boolean readContent) {
-    ImmutableList.Builder<Email> list = ImmutableList.builder();
-    for (Message message : messages) {
-      long uid = getEmailUid(message.getFolder(), message);
-      StoredEmail.Builder builder = new StoredEmail.Builder();
+  public static ImmutableList<Email> toStoredList(final Message[] messages, final boolean readContent) {
+    final ImmutableList.Builder<Email> list = ImmutableList.builder();
+    for (final Message message : messages) {
+      final long uid = getEmailUid(message.getFolder(), message);
+      final StoredEmail.Builder builder = new StoredEmail.Builder();
       builder.message(message).id(uid).readContent(readContent).build();
       list.add(builder.build());
     }
@@ -110,7 +121,7 @@ public class EmailTools {
    * @return array of Messages
    * @see Folder#getMessages(int, int)
    */
-  public static Message[] getMessages(Folder folder, boolean readContent, int numToRetrieve) {
+  public static Message[] getMessages(final Folder folder, final boolean readContent, int numToRetrieve) {
     //TODO: how is readContent being used
     try {
       // if supposed to retrieve all messages, set numToRetrieve to number of messages in folder
@@ -118,7 +129,7 @@ public class EmailTools {
         numToRetrieve = folder.getMessageCount();
       }
       return folder.getMessages(1, numToRetrieve);
-    } catch (MessagingException me) {
+    } catch (final MessagingException me) {
       throw new RetrieveEmailException("Error while retrieving emails", me);
     }
   }
@@ -130,7 +141,7 @@ public class EmailTools {
    * @param message
    * @return UID of email message
    */
-  public static long getEmailUid(Folder folder, Message message) {
+  public static long getEmailUid(final Folder folder, final Message message) {
     try {
       if (folder instanceof POP3Folder) {
         return parseLong(((POP3Folder) folder).getUID(message));
@@ -138,7 +149,7 @@ public class EmailTools {
       if (folder instanceof UIDFolder) {
         return ((UIDFolder) folder).getUID(message);
       }
-    } catch (MessagingException e) {
+    } catch (final MessagingException e) {
       throw new RetrieveEmailException(format("Cannot retrieve email:[%s] from folder [%s]", message, folder));
     }
     //TODO: maybe this should fail instead.
@@ -153,8 +164,8 @@ public class EmailTools {
    * @return array of Messages.
    * @see Folder#search(SearchTerm)
    */
-  public static Message[] search(Folder folder, SearchTerm... terms) throws MessagingException {
-    SearchTerm andTerm = new AndTerm(terms);
+  public static Message[] search(final Folder folder, final SearchTerm... terms) throws MessagingException {
+    final SearchTerm andTerm = new AndTerm(terms);
     return folder.search(andTerm);
   }
 
@@ -168,9 +179,9 @@ public class EmailTools {
    * @throws MessagingException
    * @see #search(Folder, Date, Date)
    */
-  public static Message[] search(Folder folder, Date olderThan, Date newerThan) throws MessagingException {
-    SearchTerm ot = new ReceivedDateTerm(ComparisonTerm.LT, olderThan);
-    SearchTerm nt = new ReceivedDateTerm(ComparisonTerm.GT, newerThan);
+  public static Message[] search(final Folder folder, final Date olderThan, final Date newerThan) throws MessagingException {
+    final SearchTerm ot = new ReceivedDateTerm(ComparisonTerm.LT, olderThan);
+    final SearchTerm nt = new ReceivedDateTerm(ComparisonTerm.GT, newerThan);
 
     return search(folder, ot, nt);
   }
@@ -185,13 +196,13 @@ public class EmailTools {
    * @see Folder#copyMessages(Message[], Folder)
    * @see FlagOperations#delete(Message[])
    */
-  public static void move(Folder fromFolder, Message[] messages, Folder toFolder) throws MessagingException {
+  public static void move(final Folder fromFolder, final Message[] messages, final Folder toFolder) throws MessagingException {
     if (messages.length < 1) {
       throw new MessagingException("No messages to move");
     }
     //try {
     if (fromFolder instanceof IMAPFolder) {
-      IMAPFolder imapFolder = (IMAPFolder) fromFolder;
+      final IMAPFolder imapFolder = (IMAPFolder) fromFolder;
       imapFolder.moveMessages(messages, toFolder);
     } else {
       fromFolder.copyMessages(messages, toFolder);
@@ -212,7 +223,7 @@ public class EmailTools {
    * @param toFolder
    * @see #move(Folder, Message[], Folder)
    */
-  public static void move(Folder fromFolder, Message message, Folder toFolder) throws MessagingException {
+  public static void move(final Folder fromFolder, final Message message, final Folder toFolder) throws MessagingException {
     move(fromFolder, new Message[]{message}, toFolder);
   }
 
@@ -227,7 +238,47 @@ public class EmailTools {
    * @see #move(Folder, Message[], Folder)
    * @see #getMessages(Folder, boolean, int)
    */
-  public static void move(Folder fromFolder, boolean readContent, int numToRetrieve, Folder toFolder) throws MessagingException {
+  public static void move(final Folder fromFolder, final boolean readContent, final int numToRetrieve, final Folder toFolder) throws MessagingException {
     move(fromFolder, getMessages(fromFolder, readContent, numToRetrieve), toFolder);
+  }
+
+  /**
+   * Parses an array of {@link Address}es to a {@link ImmutableList}.
+   *
+   * @param addresses
+   * @return ImmutableList with the {@link Address}es as {@link String}s.
+   */
+  public static ImmutableList<String> parseAddressArray(final Address[] addresses) {
+    if (addresses == null) {
+      return ImmutableList.of();
+    }
+    return ImmutableList.copyOf(stream(addresses).map(Object::toString).collect(toList()));
+  }
+
+  /**
+   * Parses the {@link Flags} of a {@link Message} to an {@link EmailFlags} instance.
+   *
+   * @param flags
+   * @return {@link EmailFlags}
+   */
+  public static EmailFlags parseFlags(final Flags flags) {
+    return new EmailFlags(flags.contains(ANSWERED),
+        flags.contains(DELETED),
+        flags.contains(DRAFT),
+        flags.contains(RECENT),
+        flags.contains(SEEN));
+  }
+
+  /**
+   * Parses a not null {@link Date} to a {@link LocalDateTime} instance.
+   *
+   * @param date
+   * @return date in {@link LocalDateTime} format.
+   */
+  public static LocalDateTime parseDate(final Date date) {
+    if (date == null) {
+      return null;
+    }
+    return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
   }
 }
