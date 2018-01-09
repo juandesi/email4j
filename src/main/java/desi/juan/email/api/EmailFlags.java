@@ -112,7 +112,7 @@ public class EmailFlags {
    * @param isRecent
    * @param isSeen
    */
-  public EmailFlags(boolean isAnswered, boolean isDeleted, boolean isDraft, boolean isRecent, boolean isSeen) {
+  public EmailFlags(final boolean isAnswered, final boolean isDeleted, final boolean isDraft, final boolean isRecent, final boolean isSeen) {
     this.isAnswered = isAnswered;
     this.isDeleted = isDeleted;
     this.isDraft = isDraft;

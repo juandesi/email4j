@@ -31,11 +31,11 @@ public class RetrieveEmailException extends RuntimeException {
     super();
   }
 
-  public RetrieveEmailException(String message) {
+  public RetrieveEmailException(final String message) {
     super(message);
   }
 
-  public RetrieveEmailException(String message, Throwable cause) {
+  public RetrieveEmailException(final String message, final Throwable cause) {
     super(message, cause);
   }
 }

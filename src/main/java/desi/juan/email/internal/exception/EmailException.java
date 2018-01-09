@@ -27,15 +27,15 @@ package desi.juan.email.internal.exception;
 
 public class EmailException extends RuntimeException {
 
-  public EmailException(String message) {
+  public EmailException(final String message) {
     super(message);
   }
 
-  public EmailException(Throwable cause) {
+  public EmailException(final Throwable cause) {
     super(cause);
   }
 
-  public EmailException(String message, Throwable cause) {
+  public EmailException(final String message, final Throwable cause) {
     super(message, cause);
   }
 }

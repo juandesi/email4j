@@ -81,7 +81,7 @@ public enum EmailProtocol {
    * @param name   the name of the protocol.
    * @param secure
    */
-  EmailProtocol(String name, boolean secure) {
+  EmailProtocol(final String name, final boolean secure) {
     this.name = name;
     this.secure = secure;
   }
@@ -246,7 +246,7 @@ public enum EmailProtocol {
     return unmaskProperty("mail.%s.writetimeout");
   }
 
-  private String unmaskProperty(String property) {
+  private String unmaskProperty(final String property) {
     return format(property, name);
   }
 }

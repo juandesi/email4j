@@ -54,13 +54,13 @@ public interface FolderOperations {
    * @param uid
    * @return Email
    */
-  default Email retrieveById(UIDFolder folder, long uid) {
+  default Email retrieveById(final UIDFolder folder, final long uid) {
     try {
-      Message message = folder.getMessageByUID(uid);
-      StoredEmail.Builder builder = new StoredEmail.Builder();
+      final Message message = folder.getMessageByUID(uid);
+      final StoredEmail.Builder builder = new StoredEmail.Builder();
       builder.message(message).id(uid).readContent(true).build();
       return builder.build();
-    } catch (MessagingException e) {
+    } catch (final MessagingException e) {
       throw new RetrieveEmailException(format("Cannot retrieve email id:[%s] from folder [%s]", uid, folder));
     }
   }
@@ -73,7 +73,7 @@ public interface FolderOperations {
    * @return ImmutableList<Email>
    * @see #retrieve(Folder, boolean, int)
    */
-  default ImmutableList<Email> retrieve(Folder folder, boolean readContent) {
+  default ImmutableList<Email> retrieve(final Folder folder, final boolean readContent) {
     return retrieve(folder, readContent, ALL_MESSAGES);
   }
 
@@ -87,8 +87,8 @@ public interface FolderOperations {
    * @see EmailTools#getMessages(Folder, boolean, int)
    * @see EmailTools#toStoredList(Message[], boolean)
    */
-  default ImmutableList<Email> retrieve(Folder folder, boolean readContent, int numToRetrieve) {
-    Message[] emails = EmailTools.getMessages(folder, readContent, numToRetrieve);
+  default ImmutableList<Email> retrieve(final Folder folder, final boolean readContent, final int numToRetrieve) {
+    final Message[] emails = EmailTools.getMessages(folder, readContent, numToRetrieve);
     return EmailTools.toStoredList(emails, readContent);
   }
 
@@ -102,8 +102,8 @@ public interface FolderOperations {
    * @see EmailTools#search(Folder, SearchTerm...)
    * @see EmailTools#toStoredList(Message[], boolean)
    */
-  default ImmutableList<Email> search(Folder folder, boolean readContent, SearchTerm... terms) throws MessagingException {
-    Message[] emails = EmailTools.search(folder, terms);
+  default ImmutableList<Email> search(final Folder folder, final boolean readContent, final SearchTerm... terms) throws MessagingException {
+    final Message[] emails = EmailTools.search(folder, terms);
     return EmailTools.toStoredList(emails, readContent);
   }
 
@@ -118,8 +118,8 @@ public interface FolderOperations {
    * @see EmailTools#search(Folder, Date, Date)
    * @see EmailTools#toStoredList(Message[], boolean)
    */
-  default ImmutableList<Email> search(Folder folder, boolean readContent, Date olderThan, Date newerThan) throws MessagingException {
-    Message[] emails = EmailTools.search(folder, olderThan, newerThan);
+  default ImmutableList<Email> search(final Folder folder, final boolean readContent, final Date olderThan, final Date newerThan) throws MessagingException {
+    final Message[] emails = EmailTools.search(folder, olderThan, newerThan);
     return EmailTools.toStoredList(emails, readContent);
   }
 
@@ -135,9 +135,9 @@ public interface FolderOperations {
    * @see EmailTools#move(Folder, Message[], Folder)
    * @see EmailTools#toStoredList(Message[], boolean)
    */
-  default ImmutableList<Email> retrieveAndMove(Folder fromFolder, boolean readContent, int numToRetrieve, Folder moveToFolder) throws MessagingException {
-    Message[] emails = EmailTools.getMessages(fromFolder, readContent, numToRetrieve);
-    ImmutableList<Email> storedEmails = EmailTools.toStoredList(emails, readContent);
+  default ImmutableList<Email> retrieveAndMove(final Folder fromFolder, final boolean readContent, final int numToRetrieve, final Folder moveToFolder) throws MessagingException {
+    final Message[] emails = EmailTools.getMessages(fromFolder, readContent, numToRetrieve);
+    final ImmutableList<Email> storedEmails = EmailTools.toStoredList(emails, readContent);
     if (emails.length > 1) {
       EmailTools.move(fromFolder, emails, moveToFolder);
     }
@@ -156,9 +156,9 @@ public interface FolderOperations {
    * @see EmailTools#move(Folder, Message[], Folder)
    * @see EmailTools#toStoredList(Message[], boolean)
    */
-  default ImmutableList<Email> searchAndMove(Folder searchInfolder, boolean readContent, Folder moveToFolder, SearchTerm... terms) throws MessagingException {
-    Message[] emails = EmailTools.search(searchInfolder, terms);
-    ImmutableList<Email> storedEmails = EmailTools.toStoredList(emails, readContent);
+  default ImmutableList<Email> searchAndMove(final Folder searchInfolder, final boolean readContent, final Folder moveToFolder, final SearchTerm... terms) throws MessagingException {
+    final Message[] emails = EmailTools.search(searchInfolder, terms);
+    final ImmutableList<Email> storedEmails = EmailTools.toStoredList(emails, readContent);
     if (emails.length > 1) {
       EmailTools.move(searchInfolder, emails, moveToFolder);
     }
@@ -178,9 +178,9 @@ public interface FolderOperations {
    * @see EmailTools#move(Folder, Message[], Folder)
    * @see EmailTools#toStoredList(Message[], boolean)
    */
-  default ImmutableList<Email> searchAndMove(Folder searchInfolder, boolean readContent, Folder moveToFolder, Date olderThan, Date newerThan) throws MessagingException {
-    Message[] emails = EmailTools.search(searchInfolder, olderThan, newerThan);
-    ImmutableList<Email> storedEmails = EmailTools.toStoredList(emails, readContent);
+  default ImmutableList<Email> searchAndMove(final Folder searchInfolder, final boolean readContent, final Folder moveToFolder, final Date olderThan, final Date newerThan) throws MessagingException {
+    final Message[] emails = EmailTools.search(searchInfolder, olderThan, newerThan);
+    final ImmutableList<Email> storedEmails = EmailTools.toStoredList(emails, readContent);
     if (emails.length > 1) {
       EmailTools.move(searchInfolder, emails, moveToFolder);
     }
@@ -196,7 +196,7 @@ public interface FolderOperations {
    * @param toFolder
    * @see EmailTools#move(Folder, boolean, int, Folder)
    */
-  default void move(Folder fromFolder, boolean readContent, int numToRetrieve, Folder toFolder) throws MessagingException {
+  default void move(final Folder fromFolder, final boolean readContent, final int numToRetrieve, final Folder toFolder) throws MessagingException {
     EmailTools.move(fromFolder, readContent, numToRetrieve, toFolder);
   }
 }

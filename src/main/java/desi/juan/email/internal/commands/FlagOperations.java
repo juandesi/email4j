@@ -48,23 +48,23 @@ import static javax.mail.Folder.READ_WRITE;
  */
 public interface FlagOperations {
 
-  static void markById(UIDFolder folder, EmailFlag flag, long uid) {
-    Message message;
+  static void markById(final UIDFolder folder, final EmailFlag flag, final long uid) {
+    final Message message;
     try {
       message = folder.getMessageByUID(uid);
-    } catch (MessagingException e) {
+    } catch (final MessagingException e) {
       throw new RetrieveEmailException(format("Error while retrieving the email of id:[%s]", uid, flag));
     }
     markByMessage(message, flag);
   }
 
-  static void markByMessage(Message message, EmailFlag flag) {
+  static void markByMessage(final Message message, final EmailFlag flag) {
     //TODO: is this necessary? does setFlag method already check this?
     // Doing this check may harm performance (especially if called in loop where messages are all in same folder)
     verifyFolderMode(message.getFolder(), READ_WRITE);
     try {
       message.setFlag(FlagMap.get(flag), true);
-    } catch (MessagingException e) {
+    } catch (final MessagingException e) {
       throw new RetrieveEmailException(format("Error while marking the email:[%s] as [%s]", message, flag));
     }
   }
@@ -75,8 +75,8 @@ public interface FlagOperations {
    * @param messages
    * @param flag
    */
-  static void markByMessage(Message[] messages, EmailFlag flag) {
-    for (Message currentMessage : messages) {
+  static void markByMessage(final Message[] messages, final EmailFlag flag) {
+    for (final Message currentMessage : messages) {
       markByMessage(currentMessage, flag);
     }
   }
@@ -86,7 +86,7 @@ public interface FlagOperations {
    *
    * @param message
    */
-  static void delete(Message message) {
+  static void delete(final Message message) {
     markByMessage(message, DELETED);
     expungeFolder(message.getFolder());
   }
@@ -96,7 +96,7 @@ public interface FlagOperations {
    *
    * @param messages
    */
-  static void delete(Message[] messages) {
+  static void delete(final Message[] messages) {
     markByMessage(messages, DELETED);
     //TODO: messages could be in separate folders all of which may need to be expunged
     expungeFolder(messages[0].getFolder());
@@ -107,10 +107,10 @@ public interface FlagOperations {
    *
    * @param folder
    */
-  static void expungeFolder(Folder folder) {
+  static void expungeFolder(final Folder folder) {
     try {
       folder.expunge();
-    } catch (MessagingException e) {
+    } catch (final MessagingException e) {
       throw new RetrieveEmailException(format("Error while expunging folder:[%s]", folder));
     }
   }
@@ -121,7 +121,7 @@ public interface FlagOperations {
    * @param folder
    * @param openMode mode to check against folder
    */
-  static void verifyFolderMode(Folder folder, int openMode) {
+  static void verifyFolderMode(final Folder folder, final int openMode) {
     if (folder.getMode() != openMode)
       throw new IllegalStateException(format("Folder mode must be in mode:[%s]", openMode));
   }
@@ -138,12 +138,12 @@ public interface FlagOperations {
     private final Flag flag;
     private static final Map<EmailFlag, Flag> map = Collections.unmodifiableMap(initializeMapping());
 
-    FlagMap(EmailFlag emailFlag, Flag flag) {
+    FlagMap(final EmailFlag emailFlag, final Flag flag) {
       this.emailFlag = emailFlag;
       this.flag = flag;
     }
 
-    private static Flag get(EmailFlag emailFlag) {
+    private static Flag get(final EmailFlag emailFlag) {
       if (map.containsKey(emailFlag)) {
         return map.get(emailFlag);
       }
@@ -151,8 +151,8 @@ public interface FlagOperations {
     }
 
     private static Map<EmailFlag, Flag> initializeMapping() {
-      Map<EmailFlag, Flag> map = new HashMap<>();
-      for (FlagMap s : FlagMap.values()) {
+      final Map<EmailFlag, Flag> map = new HashMap<>();
+      for (final FlagMap s : FlagMap.values()) {
         map.put(s.emailFlag, s.flag);
       }
       return map;

@@ -35,19 +35,19 @@ import javax.mail.UIDFolder;
  */
 public interface DeleteOperations {
 
-  default void deleteByUID(UIDFolder folderContainingMsg, long uid) throws MessagingException {
+  default void deleteByUID(final UIDFolder folderContainingMsg, final long uid) throws MessagingException {
     delete(folderContainingMsg.getMessageByUID(uid));
   }
 
-  default void deleteByNumber(Folder folderContainingMsg, int msgNum) throws MessagingException {
+  default void deleteByNumber(final Folder folderContainingMsg, final int msgNum) throws MessagingException {
     delete(folderContainingMsg.getMessage(msgNum));
   }
 
-  default void delete(Message msg) {
+  default void delete(final Message msg) {
     FlagOperations.delete(msg);
   }
 
-  default void delete(Message[] msgs) {
+  default void delete(final Message[] msgs) {
     FlagOperations.delete(msgs);
   }
 }

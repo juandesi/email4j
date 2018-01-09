@@ -31,11 +31,11 @@ public class SendEmailException extends RuntimeException {
     super();
   }
 
-  public SendEmailException(String message) {
+  public SendEmailException(final String message) {
     super(message);
   }
 
-  public SendEmailException(String message, Throwable cause) {
+  public SendEmailException(final String message, final Throwable cause) {
     super(message, cause);
   }
 }

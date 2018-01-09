@@ -31,11 +31,11 @@ public class EmailConnectionException extends RuntimeException {
     super();
   }
 
-  public EmailConnectionException(String message) {
+  public EmailConnectionException(final String message) {
     super(message);
   }
 
-  public EmailConnectionException(String message, Throwable cause) {
+  public EmailConnectionException(final String message, final Throwable cause) {
     super(message, cause);
   }
 }

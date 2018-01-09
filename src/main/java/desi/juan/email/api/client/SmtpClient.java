@@ -52,17 +52,13 @@ public class SmtpClient extends SenderConnection implements SendOperations {
   public static final String DEFAULT_SMTPS_PORT = "587";
 
   /**
-   * @param username
-   * @param password
-   * @param host
-   * @param port
-   * @param config
+   * {@inheritDoc}
    */
-  public SmtpClient(String username,
-                    String password,
-                    String host,
-                    int port,
-                    ClientConfiguration config) {
+  public SmtpClient(final String username,
+                    final String password,
+                    final String host,
+                    final int port,
+                    final ClientConfiguration config) {
     super(config.getTlsConfig().isPresent() ? SMTPS : SMTP,
         username,
         password,
@@ -78,7 +74,8 @@ public class SmtpClient extends SenderConnection implements SendOperations {
    * @param email
    * @see SendOperations#send(SenderConnection, Email)
    */
-  public void send(Email email) {
+  //TODO: should this be OutgoingEmail
+  public void send(final Email email) {
     send(this, email);
   }
 }

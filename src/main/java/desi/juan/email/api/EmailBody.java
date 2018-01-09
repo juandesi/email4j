@@ -49,7 +49,7 @@ public class EmailBody extends EmailData {
    * @param charset
    * @param format
    */
-  public EmailBody(String content, Charset charset, String format) {
+  public EmailBody(final String content, final Charset charset, final String format) {
     super(content, charset, format);
   }
 
@@ -57,7 +57,7 @@ public class EmailBody extends EmailData {
    * @param content
    * @param contentType
    */
-  public EmailBody(String content, String contentType) {
+  public EmailBody(final String content, final String contentType) {
     super(content, contentType);
   }
 
@@ -66,7 +66,7 @@ public class EmailBody extends EmailData {
    *
    * @see #EmailBody(String, String)
    */
-  public EmailBody(String content) {
+  public EmailBody(final String content) {
     super(content, DEFAULT_CONTENT_TYPE);
   }
 

@@ -56,17 +56,13 @@ public class Pop3Client extends MailboxManagerConnection implements DeleteOperat
   public static final String DEFAULT_POP3S_PORT = "995";
 
   /**
-   * @param username
-   * @param password
-   * @param host
-   * @param port
-   * @param config
+   * {@inheritDoc}
    */
-  public Pop3Client(String username,
-                    String password,
-                    String host,
-                    int port,
-                    ClientConfiguration config) {
+  public Pop3Client(final String username,
+                    final String password,
+                    final String host,
+                    final int port,
+                    final ClientConfiguration config) {
     super(config.getTlsConfig().isPresent() ? POP3S : POP3,
         username,
         password,
@@ -84,15 +80,15 @@ public class Pop3Client extends MailboxManagerConnection implements DeleteOperat
    * @param numToRetrieve
    * @return
    */
-  public ImmutableList<Email> retrieve(String folder, boolean isDeleteAfterRetrieve, int numToRetrieve) {
-    Folder readOnlyFolder = getFolder(folder, READ_ONLY);
-    ImmutableList<Email> emails = retrieve(readOnlyFolder, true, numToRetrieve);
+  public ImmutableList<Email> retrieve(final String folder, final boolean isDeleteAfterRetrieve, final int numToRetrieve) {
+    final Folder readOnlyFolder = getFolder(folder, READ_ONLY);
+    final ImmutableList<Email> emails = retrieve(readOnlyFolder, true, numToRetrieve);
     if (isDeleteAfterRetrieve) {
       //TODO: check input streams after the emails have been deleted
       emails.forEach(e -> {
         try {
           deleteByNumber(readOnlyFolder, e.getNumber());
-        } catch (MessagingException e1) {
+        } catch (final MessagingException e1) {
 
           e1.printStackTrace();
           //TODO: this needs to be better logged
@@ -102,15 +98,15 @@ public class Pop3Client extends MailboxManagerConnection implements DeleteOperat
     return emails;
   }
 
-  public ImmutableList<Email> retrieve(String folder, boolean isDeleteAfterRetrieve) {
+  public ImmutableList<Email> retrieve(final String folder, final boolean isDeleteAfterRetrieve) {
     return retrieve(folder, isDeleteAfterRetrieve, FolderOperations.ALL_MESSAGES);
   }
 
-  public ImmutableList<Email> retrieve(String folder) {
+  public ImmutableList<Email> retrieve(final String folder) {
     return retrieve(folder, false);
   }
 
-  public ImmutableList<Email> retrieve(String folder, int numToRetrieve) {
+  public ImmutableList<Email> retrieve(final String folder, final int numToRetrieve) {
     return retrieve(folder, false, numToRetrieve);
   }
 }

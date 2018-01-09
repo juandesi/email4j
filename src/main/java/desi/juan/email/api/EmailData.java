@@ -64,7 +64,7 @@ class EmailData {
    * @param contentType
    * @see #EmailData(Object, ContentType)
    */
-  EmailData(Object content, String contentType) {
+  EmailData(final Object content, final String contentType) {
     this(content, EmailTools.toContentType(contentType));
   }
 
@@ -75,7 +75,7 @@ class EmailData {
    * @param contentType
    * @see #EmailData(Object, Charset, String)
    */
-  private EmailData(Object content, ContentType contentType) {
+  private EmailData(final Object content, final ContentType contentType) {
     this(content, EmailTools.getCharset(contentType), EmailTools.getFormat(contentType));
   }
 
@@ -86,7 +86,7 @@ class EmailData {
    * @param charset
    * @param emailFormat
    */
-  EmailData(Object content, Charset charset, String emailFormat) {
+  EmailData(final Object content, final Charset charset, final String emailFormat) {
     if (content == null || emailFormat == null) {
       throw new IllegalArgumentException("No param can be null");
     }

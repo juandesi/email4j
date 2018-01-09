@@ -65,7 +65,7 @@ public final class EmailAttachment extends EmailData {
    * @param content
    * @param contentType
    */
-  public EmailAttachment(String id, Object content, String contentType) {
+  public EmailAttachment(final String id, final Object content, final String contentType) {
     this(id, content, contentType, ImmutableList.of());
   }
 
@@ -77,7 +77,7 @@ public final class EmailAttachment extends EmailData {
    * @param contentType
    * @param headers
    */
-  public EmailAttachment(String id, Object content, String contentType, ImmutableList<Header> headers) {
+  public EmailAttachment(final String id, final Object content, final String contentType, final ImmutableList<Header> headers) {
     super(content, contentType);
     this.headers = headers;
     this.id = id;
