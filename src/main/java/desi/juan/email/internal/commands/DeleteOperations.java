@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,39 +25,29 @@
  */
 package desi.juan.email.internal.commands;
 
-import static java.lang.String.format;
-
-import javax.mail.Flags;
-import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.UIDFolder;
 
-import desi.juan.email.internal.exception.RetrieveEmailException;
-
 /**
- * Class that contains the delete email operations.
+ * Interface for delete email operations.
  */
-public final class DeleteOperations {
+public interface DeleteOperations {
 
-  public void deleteById(UIDFolder folder, long uid) {
-    try {
-      Message message = folder.getMessageByUID(uid);
-      message.setFlag(Flag.DELETED, true);
-      ((Folder)folder).expunge();
-    } catch (MessagingException e) {
-      throw new RetrieveEmailException(format("Error while deleting email of id:[%s] from folder", uid));
-    }
+  default void deleteByUID(final UIDFolder folderContainingMsg, final long uid) throws MessagingException {
+    delete(folderContainingMsg.getMessageByUID(uid));
   }
 
-  public void deleteByNumber(Folder folder, int number) {
-    try {
-      Message message = folder.getMessage(number);
-      message.setFlag(Flag.DELETED, true);
-      folder.expunge();
-    } catch (MessagingException e) {
-      throw new RetrieveEmailException(format("Error while deleting email number:[%s] from folder [%s]", number, folder.getName()));
-    }
+  default void deleteByNumber(final Folder folderContainingMsg, final int msgNum) throws MessagingException {
+    delete(folderContainingMsg.getMessage(msgNum));
+  }
+
+  default void delete(final Message msg) {
+    FlagOperations.delete(msg);
+  }
+
+  default void delete(final Message[] msgs) {
+    FlagOperations.delete(msgs);
   }
 }

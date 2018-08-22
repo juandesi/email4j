@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,215 +25,293 @@
  */
 package desi.juan.email.internal;
 
-import static com.google.common.collect.ImmutableList.copyOf;
-import static java.time.LocalDateTime.now;
-
-import com.google.common.collect.ImmutableMap;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.mail.Folder;
-
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ImmutableList;
 import desi.juan.email.api.Email;
 import desi.juan.email.api.EmailAttachment;
 import desi.juan.email.api.EmailBody;
 import desi.juan.email.api.EmailFlags;
 
+import javax.mail.Header;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static desi.juan.email.api.EmailConstants.NO_SUBJECT;
+import static java.lang.String.format;
+import static java.time.LocalDateTime.now;
+
 /**
- * Contains all the metadata of an email, it carries information such as the subject of the email, the id in the mailbox and the
- * recipients between others.
+ * An implementation of an {@link Email} to be used for outgoing messages.
  */
-public class OutgoingEmail implements Email {
+public class OutgoingEmail extends Email {
 
   /**
-   * The address(es) of the person(s) which sent the email.
-   * <p>
-   * This will usually be the sender of the email, but some emails may direct replies to a different address
-   */
-  private final List<String> fromAddresses;
-
-  /**
-   * The recipient addresses of "To" (primary) type.
-   */
-  private final List<String> toAddresses;
-
-  /**
-   * The recipient addresses of "Cc" (carbon copy) type
-   */
-  private final List<String> ccAddresses;
-
-  /**
-   * The recipient addresses of "Bcc" (blind carbon copy) type
-   */
-  private final List<String> bccAddresses;
-
-  /**
-   * The email addresses to which this email should reply.
-   */
-  private final List<String> replyToAddresses;
-
-  /**
-   * The headers that this email carry.
-   */
-  private final Multimap<String, String> headers;
-
-  /**
-   * The subject of the email.
-   */
-  private final String subject;
-
-  /**
-   * The time where the email was sent.
-   * <p>
-   * Different {@link Folder} implementations may assign this value or not.
-   */
-  private final LocalDateTime sentDate;
-
-  /**
-   * the attachments bounded to be sent with the email.
-   */
-  private final List<EmailAttachment> attachments;
-
-  /**
-   * the text body of the email.
-   */
-  private final EmailBody body;
-
-  /**
+   * /**
    * Creates a new instance.
+   *
+   * @param subject
+   * @param from
+   * @param to
+   * @param cc
+   * @param bcc
+   * @param replyTo
+   * @param body
+   * @param attachments
+   * @param headers
    */
-  public OutgoingEmail(String subject,
-                       List<String> fromAddresses,
-                       List<String> toAddresses,
-                       List<String> bccAddresses,
-                       List<String> ccAddresses,
-                       List<String> replyToAddresses,
-                       EmailBody body,
-                       List<EmailAttachment> attachments,
-                       Multimap<String, String> headers) {
-    this.subject = subject;
-    this.sentDate = now();
-    this.toAddresses = copyOf(toAddresses);
-    this.ccAddresses = copyOf(ccAddresses);
-    this.bccAddresses = copyOf(bccAddresses);
-    this.fromAddresses = copyOf(fromAddresses);
-    this.replyToAddresses = copyOf(replyToAddresses);
-    this.body = body;
-    this.attachments = copyOf(attachments);
-    this.headers = ImmutableMultimap.copyOf(headers);
+  OutgoingEmail(final String subject,
+                final ImmutableList<String> from,
+                final ImmutableList<String> replyTo,
+                final ImmutableList<String> to,
+                final ImmutableList<String> cc,
+                final ImmutableList<String> bcc,
+                final EmailBody body,
+                final ImmutableList<EmailAttachment> attachments,
+                final ImmutableList<Header> headers) {
+    super(subject, now(), from, replyTo, to, cc, bcc, body, attachments, headers);
+    this.bcc = bcc;
+  }
+
+  /**
+   * Builder to help build a new OutgoingEmail.
+   */
+  public static class Builder {
+    private String subject = NO_SUBJECT;
+    private final ImmutableList.Builder<String> from = new ImmutableList.Builder<>();
+    private ImmutableList.Builder<String> to = new ImmutableList.Builder<>();
+    private ImmutableList.Builder<String> bcc = new ImmutableList.Builder<>();
+    private ImmutableList.Builder<String> cc = new ImmutableList.Builder<>();
+    private ImmutableList.Builder<String> replyTo = new ImmutableList.Builder<>();
+    private EmailBody body;
+    private ImmutableList.Builder<EmailAttachment> attachments = new ImmutableList.Builder<>();
+    private ImmutableList.Builder<Header> headers = new ImmutableList.Builder<>();
+
+    /**
+     * Sets the subject of the email that is being built.
+     *
+     * @param subject the email subject to be set.
+     * @return this {@link Builder}
+     */
+    public Builder subject(final String subject) {
+      this.subject = subject;
+      return this;
+    }
+
+    /**
+     * Adds an {@link Email} "From" address
+     *
+     * @param from the from address to be added.
+     * @return this {@link Builder}
+     */
+    public Builder from(final String from) {
+      this.from.add(from);
+      return this;
+    }
+
+    /**
+     * Adds an {@link Email} "From" address
+     *
+     * @param from the from addresses to be added.
+     * @return this {@link Builder}
+     */
+    public Builder from(final List<String> from) {
+      this.from.addAll(from);
+      return this;
+    }
+
+    /**
+     * Adds a single "ReplyTo" address to the {@link Email} that is being built.
+     *
+     * @param replyTo the "replyTo" address to be added.
+     * @return this {@link Builder}
+     */
+    public Builder replyTo(final String replyTo) {
+      this.replyTo.add(replyTo);
+      return this;
+    }
+
+    /**
+     * Adds "ReplyTo" addresses to the {@link Email} that is being built.
+     *
+     * @param replyTo the "replyTo" addresses to be added.
+     * @return this {@link Builder}
+     */
+    public Builder replyTo(final List<String> replyTo) {
+      this.replyTo.addAll(replyTo);
+      return this;
+    }
+
+    /**
+     * Adds a single "To" (primary) recipient to the {@link Email} that is being built.
+     *
+     * @param to the "to" address to be added.
+     * @return this {@link Builder}
+     */
+    public Builder to(final String to) {
+      this.to.add(to);
+      return this;
+    }
+
+    /**
+     * Adds "To" (primary) recipients to the {@link Email} that is being built.
+     *
+     * @param to the "to" addresses to be added.
+     * @return this {@link Builder}
+     */
+    public Builder to(final List<String> to) {
+      this.to.addAll(to);
+      return this;
+    }
+
+    /**
+     * Adds a single "Cc" (carbon copy) recipient to the {@link Email} that is being built.
+     *
+     * @param cc the "cc" address to be added.
+     * @return this {@link Builder}
+     */
+    public Builder cc(final String cc) {
+      this.cc.add(cc);
+      return this;
+    }
+
+    /**
+     * Adds "Cc" (carbon copy) recipients to the {@link Email} that is being built.
+     *
+     * @param cc the "cc" addresses to be added.
+     * @return this {@link Builder}
+     */
+    public Builder cc(final List<String> cc) {
+      this.cc.addAll(cc);
+      return this;
+    }
+
+    /**
+     * Adds a single "Bcc" (blind carbon copy) recipient to the {@link Email} that is being built.
+     *
+     * @param bcc the "bcc" address to be added.
+     * @return this {@link Builder}
+     */
+    public Builder bcc(final String bcc) {
+      this.bcc.add(bcc);
+      return this;
+    }
+
+    /**
+     * Adds "Bcc" (blind carbon copy) recipients to the {@link Email} that is being built.
+     *
+     * @param bcc the "bcc" addresses to be added.
+     * @return this {@link Builder}
+     */
+    public Builder bcc(final List<String> bcc) {
+      this.bcc.addAll(bcc);
+      return this;
+    }
+
+    /**
+     * Adds a Header of the {@link Email} that is being built.
+     *
+     * @param key the key name of the header.
+     * @param val the value of the header.
+     * @return this {@link Builder}
+     */
+    public Builder header(final String key, final String val) {
+      this.headers.add(new Header(key, val));
+      return this;
+    }
+
+    /**
+     * Sets the specified {@link EmailBody} to the {@link Email} that is being built.
+     *
+     * @param body
+     * @return this {@link Builder}
+     */
+    public Builder body(final EmailBody body) {
+      this.body = body;
+      return this;
+    }
+
+    /**
+     * Sets a plain text {@link EmailBody} to the {@link Email} that is being built.
+     *
+     * @param body
+     * @return this {@link Builder}
+     */
+    public Builder body(final String body) {
+      return body(new EmailBody(body));
+    }
+
+    /**
+     * Adds an {@link EmailAttachment} to the {@link Email} that is being built.
+     *
+     * @return this {@link Builder}
+     */
+    public Builder attachment(final EmailAttachment attachment) {
+      this.attachments.add(attachment);
+      return this;
+    }
+
+    /**
+     * Adds a {@link List} of {@link EmailAttachment}s to the {@link Email} that is being built.
+     *
+     * @return this {@link Builder}
+     */
+    public Builder attachment(final List<EmailAttachment> attachments) {
+      this.attachments.addAll(attachments);
+      return this;
+    }
+
+    /**
+     * Builds a new {@link Email} instance.
+     */
+    public Email build() {
+      return new OutgoingEmail(
+          subject,
+          from.build(),
+          replyTo.build(),
+          to.build(),
+          cc.build(),
+          bcc.build(),
+          body,
+          attachments.build(),
+          headers.build()
+      );
+    }
+  }
+
+  /**
+   * The recipient addresses of "Bcc" (blind carbon copy) type.
+   */
+  private final ImmutableList<String> bcc;
+
+  /**
+   * The recipient addresses of "Bcc" (blind carbon copy) type.
+   */
+  @Override
+  public ImmutableList<String> getBcc() {
+    return bcc;
   }
 
   @Override
   public int getNumber() {
-    throw new UnsupportedOperationException("Outgoing emails does not contain number, the number is set when the message arrives to a folder");
+    throw new UnsupportedOperationException(format("%s%s%s", ERROR_DO_NOT_CONTAIN, "a number which is", ERROR_SET_WHEN));
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public long getId() {
-    throw new UnsupportedOperationException("Outgoing emails does not contain id, the id is set when the message arrives to a folder");
+    throw new UnsupportedOperationException(format("%s%s%s", ERROR_DO_NOT_CONTAIN, "an id which is", ERROR_SET_WHEN));
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<String> getReplyToAddresses() {
-    return replyToAddresses;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public String getSubject() {
-    return subject;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<String> getToAddresses() {
-    return toAddresses;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<String> getBccAddresses() {
-    return bccAddresses;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<String> getCcAddresses() {
-    return ccAddresses;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<String> getFromAddresses() {
-    return fromAddresses;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Optional<LocalDateTime> getSentDate() {
-    return Optional.ofNullable(sentDate);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Multimap<String, String> getHeaders() {
-    return headers != null ? ImmutableMultimap.copyOf(headers) : ImmutableMultimap.of();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public EmailBody getBody() {
-    return body;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<EmailAttachment> getAttachments() {
-    return attachments;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public Optional<LocalDateTime> getReceivedDate() {
-    throw new UnsupportedOperationException("Outgoing emails does not contain a received date, the received date is set when the message arrives to a folder");
+    throw new UnsupportedOperationException(format("%s%s%s", ERROR_DO_NOT_CONTAIN, "a received date which is", ERROR_SET_WHEN));
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public EmailFlags getFlags() {
-    throw new UnsupportedOperationException("Outgoing emails are not flagged, flags are set when the message arrives to a folder");
+    throw new UnsupportedOperationException(format("%s%s%s", ERROR_DO_NOT_CONTAIN, "flags, which are", ERROR_SET_WHEN));
   }
+
+  private static final String ERROR_EMAILS = "OutgoingEmails";
+  private static final String ERROR_DO_NOT_CONTAIN = ERROR_EMAILS + " do not contain ";
+  private static final String ERROR_SET_WHEN = " set when the Email arrives to a folder.";
 }

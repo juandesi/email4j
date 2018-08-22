@@ -6,20 +6,19 @@
 
     <groupId>desi.juan</groupId>
     <artifactId>email4j</artifactId>
-    <version>1.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+    <version>1.2</version>
+    <packaging>jar</packaging>
 
     <properties>
-        <javaMailVersion>1.5.6</javaMailVersion>
-        <guavaVersion>18.0</guavaVersion>
-        <commonsLangVersion>2.6</commonsLangVersion>
-        <commonsIoVersion>2.4</commonsIoVersion>
-        <icegreenVersion>1.5.0</icegreenVersion>
-        <junitVersion>4.12</junitVersion>
-        <mockitoVersion>1.8.5</mockitoVersion>
+        <javaMailVersion>1.6.0</javaMailVersion>
+        <guavaVersion>23.5-jre</guavaVersion>
+        <icegreenVersion>1.5.6</icegreenVersion>
+        <junitVintageVersion>5.1.0-M1</junitVintageVersion>
+        <mockitoVersion>2.13.0</mockitoVersion>
         <hamcrestVersion>1.3</hamcrestVersion>
         <license.licenseResolver>${project.baseUri}/LICENSE.txt</license.licenseResolver>
-        <license.licenseName>my_license</license.licenseName>
+        <license.licenseName>email4j</license.licenseName>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <build>
@@ -36,20 +35,20 @@
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>2.8</version>
+                <version>3.0</version>
                 <configuration>
                     <header>LICENSE.txt</header>
                     <excludes>
                         <exclude>target/**</exclude>
-                        <exclude>**/.gitignore</exclude>
-                        <exclude>**/*.txt</exclude>
-                        <exclude>**/*.xml</exclude>
-                        <exclude>**/*.properties</exclude>
-                        <exclude>**/*.md</exclude>
-                        <exclude>**/*.html</exclude>
+                        <exclude>.gitignore</exclude>
+                        <exclude>*.txt</exclude>
+                        <exclude>*.xml</exclude>
+                        <exclude>*.properties</exclude>
+                        <exclude>*.md</exclude>
+                        <exclude>*.html</exclude>
                     </excludes>
                     <includes>
-                        <include>**/*.java</include>
+                        <include>*.java</include>
                     </includes>
                 </configuration>
             </plugin>
@@ -67,16 +66,6 @@
             <artifactId>guava</artifactId>
             <version>${guavaVersion}</version>
         </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>${commonsLangVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commonsIoVersion}</version>
-        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>com.icegreen</groupId>
@@ -85,9 +74,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junitVersion}</version>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junitVintageVersion}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -96,7 +86,7 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
+            <artifactId>mockito-core</artifactId>
             <version>${mockitoVersion}</version>
             <scope>test</scope>
         </dependency>

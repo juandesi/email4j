@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +26,6 @@
 package desi.juan.email.api;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Utf8;
 
 import java.nio.charset.Charset;
 
@@ -34,38 +35,48 @@ import java.nio.charset.Charset;
 public final class EmailConstants {
 
   /**
+   * No subject.
+   */
+  public static final String NO_SUBJECT = "[No Subject]";
+
+  /**
    * Default folder name for all the mailboxes.
    */
   public static final String INBOX_FOLDER = "INBOX";
 
   /**
-   * defines all the multipart content types
+   * Defines all the multipart content types.
    */
   public static final String MULTIPART = "multipart/*";
 
   /**
-   * defines all the text content types
+   * Defines all the text content types.
    */
   public static final String TEXT = "text/*";
 
   /**
-   * Plain text body content type
+   * Plain text format.
    */
   public static final String TEXT_PLAIN = "text/plain";
 
   /**
-   * HTML body content type
+   * HTML format.
    */
   public static final String TEXT_HTML = "text/html";
 
   /**
-   * returns the default content type.
+   * The default charset.
    */
-  public static final String DEFAULT_CONTENT_TYPE = TEXT_PLAIN + "; charset=" + Charsets.UTF_8;
+  public static final Charset DEFAULT_CHARSET = Charsets.US_ASCII;
 
   /**
-   * Hide constructor
+   * The default content type.
    */
-  private EmailConstants() {}
+  public static final String DEFAULT_CONTENT_TYPE = TEXT_PLAIN + "; charset=" + DEFAULT_CHARSET;
 
+  /**
+   * Hide constructor.
+   */
+  private EmailConstants() {
+  }
 }

@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,24 +26,20 @@
 package desi.juan.email.api.client;
 
 
+import desi.juan.email.api.Email;
+import desi.juan.email.api.client.configuration.ClientConfiguration;
+import desi.juan.email.internal.commands.SendOperations;
+import desi.juan.email.internal.connection.SenderConnection;
+
 import static desi.juan.email.internal.EmailProtocol.SMTP;
 import static desi.juan.email.internal.EmailProtocol.SMTPS;
 
-import java.util.Optional;
-
-import desi.juan.email.api.Email;
-import desi.juan.email.api.client.configuration.ClientConfiguration;
-import desi.juan.email.api.security.TlsConfiguration;
-import desi.juan.email.internal.commands.SendCommand;
-import desi.juan.email.internal.connection.SenderConnection;
-
 /**
  * Encapsulates all the functionality necessary to send emails through an SMTP server.
- * <p>
- * This class takes care of all low level details of interacting with an SMTP server and provides a
- * convenient higher level interface
+ *
+ * This class takes care of all low level details of interacting with an SMTP server and provides a convenient higher level interface.
  */
-public class SmtpClient {
+public class SmtpClient extends SenderConnection implements SendOperations {
 
   /**
    * Default port value for SMTP servers.
@@ -53,27 +51,31 @@ public class SmtpClient {
    */
   public static final String DEFAULT_SMTPS_PORT = "587";
 
-  private SenderConnection connection;
-  private SendCommand sendCommand = new SendCommand();
-
-  public SmtpClient(String username,
-                    String password,
-                    String host,
-                    int port,
-                    ClientConfiguration configuration) {
-    Optional<TlsConfiguration> tls = configuration.getTlsConfig();
-    this.connection = new SenderConnection(tls.isPresent() ? SMTPS : SMTP,
-                                           username,
-                                           password,
-                                           host,
-                                           port,
-                                           configuration.getConnectionTimeout(),
-                                           configuration.getReadTimeout(),
-                                           configuration.getWriteTimeout(),
-                                           configuration.getProperties());
+  /**
+   * {@inheritDoc}
+   */
+  public SmtpClient(final String username,
+                    final String password,
+                    final String host,
+                    final int port,
+                    final ClientConfiguration config) {
+    super(config.getTlsConfig().isPresent() ? SMTPS : SMTP,
+        username,
+        password,
+        host,
+        port,
+        config.getConnectionTimeout(),
+        config.getReadTimeout(),
+        config.getWriteTimeout(),
+        config.getProperties());
   }
 
-  public void send(Email email) {
-    sendCommand.send(connection, email);
+  /**
+   * @param email
+   * @see SendOperations#send(SenderConnection, Email)
+   */
+  //TODO: should this be OutgoingEmail
+  public void send(final Email email) {
+    send(this, email);
   }
 }

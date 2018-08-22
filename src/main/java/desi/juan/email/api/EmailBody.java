@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,58 +25,57 @@
  */
 package desi.juan.email.api;
 
-import com.google.common.base.Charsets;
-
 import java.nio.charset.Charset;
 
 import static desi.juan.email.api.EmailConstants.DEFAULT_CONTENT_TYPE;
-import static java.lang.String.format;
 
 /**
- * Represents and enables the construction of the content of an email with a body of type "text/*" and a specific character
- * encoding.
+ * Represents and enables the construction of the content of an email.
+ *
+ * @see EmailData
  */
-public class EmailBody {
+public class EmailBody extends EmailData {
 
   /**
-   * @return the body content of the email as a {@link String} value.
+   * @return the body content of the {@link Email} as a {@link String} value.
    */
+  @Override
   public String getContent() {
-    return body;
+    return (String) super.getContent();
   }
 
   /**
-   * @return the content type of the body, one of text/plain or text/html
+   * @param content
+   * @param charset
+   * @param format
    */
-  public String getContentType() {
-    return format("%s; charset=%s", contentType, charset);
+  public EmailBody(final String content, final Charset charset, final String format) {
+    super(content, charset, format);
   }
 
   /**
-   * Text body of the message content
+   * @param content
+   * @param contentType
    */
-  private final String body;
+  public EmailBody(final String content, final String contentType) {
+    super(content, contentType);
+  }
 
   /**
-   * ContentType of the body text. Example: "text/html" or "text/plain".
+   * Body with DEFAULT_CONTENT_TYPE.
+   *
+   * @see #EmailBody(String, String)
    */
-  private final String contentType;
+  public EmailBody(final String content) {
+    super(content, DEFAULT_CONTENT_TYPE);
+  }
 
   /**
-   * The character encoding of the body.
+   * Empty body with DEFAULT_CONTENT_TYPE.
+   *
+   * @see #EmailBody(String)
    */
-  private final Charset charset;
-
   public EmailBody() {
-    this("", Charsets.UTF_8, DEFAULT_CONTENT_TYPE);
-  }
-
-  public EmailBody(String body, Charset charset, String contentType) {
-    if (body == null || contentType == null || charset == null) {
-      throw new IllegalArgumentException("param cannot be null");
-    }
-    this.body = body;
-    this.contentType = contentType;
-    this.charset = charset;
+    this("");
   }
 }

@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,11 +31,11 @@ public class RetrieveEmailException extends RuntimeException {
     super();
   }
 
-  public RetrieveEmailException(String message) {
+  public RetrieveEmailException(final String message) {
     super(message);
   }
 
-  public RetrieveEmailException(String message, Throwable cause) {
+  public RetrieveEmailException(final String message, final Throwable cause) {
     super(message, cause);
   }
 }

@@ -1,7 +1,9 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Juan Desimoni
+ * Original work Copyright (c) 2016 Juan Desimoni
+ * Modified work Copyright (c) 2017 yx91490
+ * Modified work Copyright (c) 2017 Jonathan Hult
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,105 +25,85 @@
  */
 package desi.juan.email.api.client;
 
-import static desi.juan.email.EmailTestUtils.EMAIL_CONTENT;
-import static desi.juan.email.EmailTestUtils.EMAIL_SUBJECT;
-import static desi.juan.email.EmailTestUtils.GOHAN_EMAIL;
-import static desi.juan.email.EmailTestUtils.GOKU_EMAIL;
-import static desi.juan.email.EmailTestUtils.HEADER_KEY;
-import static desi.juan.email.EmailTestUtils.HEADER_VAL;
-import static desi.juan.email.EmailTestUtils.TRUNKS_EMAIL;
-import static desi.juan.email.EmailTestUtils.VEGETA_EMAIL;
-import static desi.juan.email.api.EmailBuilder.newEmail;
-import static java.util.Arrays.asList;
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.toList;
-import static javax.mail.Message.RecipientType.CC;
-import static javax.mail.Message.RecipientType.TO;
-import static junit.framework.TestCase.fail;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.mail.Address;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
-import desi.juan.email.Email4JTestCase;
+import com.google.common.collect.ImmutableList;
+import desi.juan.email.api.BaseTestCase;
 import desi.juan.email.api.Email;
 import desi.juan.email.api.client.configuration.ClientConfiguration;
 import desi.juan.email.internal.EmailProtocol;
+import desi.juan.email.internal.OutgoingEmail;
+import desi.juan.email.internal.connection.AbstractConnection;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SmtpClientTestCase extends Email4JTestCase {
+import static junit.framework.TestCase.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+
+public class SmtpClientTestCase extends BaseTestCase {
 
   private SmtpClient client;
 
   @Before
-  public void createClient() {
-    client = new SmtpClient(GOKU_EMAIL, PASSWORD, HOST, PORT, new ClientConfiguration());
-  }
-
-  @Test
-  public void sendSimple() throws IOException, MessagingException {
-    Email email = buildSimpleEmail();
-    client.send(email);
-    List<MimeMessage> messages = getReceivedMessages();
-    assertThat(messages, hasSize(3));
-    MimeMessage message = messages.get(0);
-    assertThat(message.getContent().toString().trim(), is(EMAIL_CONTENT));
-    assertThat(message.getSubject(), is(EMAIL_SUBJECT));
-    assertRecipients(message.getRecipients(TO), GOHAN_EMAIL);
-    assertRecipients(message.getRecipients(CC), VEGETA_EMAIL, TRUNKS_EMAIL);
-    assertThat(message.getHeader(HEADER_KEY)[0], is(HEADER_VAL));
-  }
-
-  @Test
-  public void sendBatch() throws IOException, MessagingException {
-    Email email = buildSimpleEmail();
-    for (int i = 0; i < 100; i++) {
-      client.send(email);
-    }
-    List<MimeMessage> messages = getReceivedMessages();
-    assertThat(messages, hasSize(300));
-    messages.forEach(m -> {
-      try {
-        assertThat(m.getContent().toString().trim(), is(EMAIL_CONTENT));
-        assertThat(m.getSubject(), is(EMAIL_SUBJECT));
-      } catch (Exception e) {
-        fail(e.getMessage());
-      }
-    });
-
+  public void before() {
+    client = new SmtpClient(USER, PASSWORD, HOST, PORT, new ClientConfiguration());
+    send();
   }
 
   @Override
-  public String getProtocol() {
-    return EmailProtocol.SMTP.getName();
+  protected EmailProtocol getProtocol() {
+    return EmailProtocol.SMTP;
   }
 
-  private Email buildSimpleEmail() {
-    return newEmail()
-      .to(GOHAN_EMAIL)
-      .cc(VEGETA_EMAIL)
-      .cc(TRUNKS_EMAIL)
-      .withBody(EMAIL_CONTENT)
-      .withSubject(EMAIL_SUBJECT)
-      .withHeader(HEADER_KEY, HEADER_VAL)
-      .from(GOKU_EMAIL)
-      .build();
+  @Override
+  protected AbstractConnection getClient() {
+    return client;
   }
 
-  private List<MimeMessage> getReceivedMessages() {
-    return asList(server.getReceivedMessages());
+  @Test
+  public void test() {
+    final ImmutableList<Email> receivedEmails = getReceivedMessages();
+
+    // NUM_OF_EMAILS_TO_TEST * 4 = 20
+    // 4 because of To, CC, CC and BCC
+    assertThat(receivedEmails, hasSize(20));
+
+    receivedEmails.forEach(SmtpClientTestCase::assertEmailData);
   }
 
-  private void assertRecipients(Address[] recipients, String... emails) {
-    List<String> addresses = stream(recipients).map(Address::toString).collect(toList());
-    assertThat(addresses, containsInAnyOrder(emails));
+  private void send() {
+    final Email emailToSend = buildEmail();
+    for (int i = 0; i < NUM_OF_EMAILS_TO_TEST; i++) {
+      client.send(emailToSend);
+      assertOutgoingEmail(emailToSend);
+    }
+  }
+
+  private static void assertEmailData(final Email email) {
+    try {
+      assertStoredEmail(email);
+      assertSubject(email);
+      assertFrom(email);
+      assertRecipients(email);
+      assertBodyContent(email);
+      assertAttachments(email);
+      assertHeaders(email);
+    } catch (final Exception ex) {
+      fail(ex.getMessage());
+    }
+  }
+
+  private Email buildEmail() {
+    return new OutgoingEmail.Builder()
+        .subject(EMAIL_SUBJECT)
+        .from(PERSON_4)
+        .to(PERSON_1)
+        .cc(PERSON_2)
+        .cc(PERSON_3)
+        .bcc(PERSON_5)
+        .body(EMAIL_CONTENT)
+        .header(HEADER_KEY, HEADER_VAL)
+        .attachment(ATTACHMENT_1)
+        .attachment(ATTACHMENT_2)
+        .build();
   }
 }
