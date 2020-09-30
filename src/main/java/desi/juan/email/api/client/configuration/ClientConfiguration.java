@@ -52,10 +52,10 @@ public class ClientConfiguration {
   }
 
   public ClientConfiguration(long connectionTimeout,
-                      Map<String, String> properties,
-                      long readTimeout,
-                      TlsConfiguration tlsConfig,
-                      long writeTimeout) {
+                            Map<String, String> properties,
+                            long readTimeout,
+                            TlsConfiguration tlsConfig,
+                            long writeTimeout) {
     this.connectionTimeout = connectionTimeout;
     this.properties = ImmutableMap.copyOf(properties);
     this.readTimeout = readTimeout;

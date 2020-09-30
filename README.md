@@ -8,20 +8,23 @@ There are several entities that wrap the low level objects that the transport ha
 
 ## How to get it
 
-You can include this library in your project using maven by adding the artifact. (installing locally the dependency in your .m2 repository `mvn clean install`)
+You can include this library in your project using maven by adding the artifact and repository as follows.
 
 ```xml
 <groupId>desi.juan</groupId>
 <artifactId>email4j</artifactId>
 <version>1.0-SNAPSHOT</version>
 ```
-    
-or you can simply built it locally to get the .jar file
-    
-* clone or download the repository
-* run `mvn clean package -DskipTests` (maven 3 or higher is required)
-* then you will find the built .jar in the generated target folder.  
 
+```xml
+<repository>
+    <id>email4j-repo</id>
+    <url>https://raw.github.com/juandesi/email4j/mvn-repo/</url>
+</repository>
+```
+    
+NOTE: this is a custom repository deployed into a github branch.   
+ 
 ## Introduction
 
 Basically you have 3 different clients for connecting with mailboxes.
