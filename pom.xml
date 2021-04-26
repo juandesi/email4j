@@ -13,7 +13,7 @@
         <javaMailVersion>1.5.6</javaMailVersion>
         <guavaVersion>18.0</guavaVersion>
         <commonsLangVersion>2.6</commonsLangVersion>
-        <commonsIoVersion>2.4</commonsIoVersion>
+        <commonsIoVersion>2.7</commonsIoVersion>
         <icegreenVersion>1.5.0</icegreenVersion>
         <junitVersion>4.12</junitVersion>
         <mockitoVersion>1.8.5</mockitoVersion>
